@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO headers (hash,parent,parent_state_root,extrinsic_hash,slot,epoch_mark,tickets_mark,offenders_mark,author_index,entropy_source,seal) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Int4",
+        "Varchar",
+        "VarcharArray",
+        "VarcharArray",
+        "Int4",
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "828f06de07fc9fc8c656294c6be49cf56b86d0f7e1a3f692ed6019783a104642"
+}

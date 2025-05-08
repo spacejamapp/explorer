@@ -2039,6 +2039,7 @@ dependencies = [
  "hex",
  "jadex",
  "runtime",
+ "serde",
  "spacejam-core",
  "sqlx",
  "tokio",

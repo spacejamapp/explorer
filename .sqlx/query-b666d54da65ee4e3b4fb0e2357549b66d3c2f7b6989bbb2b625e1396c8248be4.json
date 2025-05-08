@@ -1,0 +1,89 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM headers ORDER BY id DESC LIMIT $1 OFFSET $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "hash",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "parent",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "parent_state_root",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "extrinsic_hash",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "slot",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "epoch_mark",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "tickets_mark",
+        "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 8,
+        "name": "offenders_mark",
+        "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 9,
+        "name": "author_index",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 10,
+        "name": "entropy_source",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 11,
+        "name": "seal",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "b666d54da65ee4e3b4fb0e2357549b66d3c2f7b6989bbb2b625e1396c8248be4"
+}
