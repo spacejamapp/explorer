@@ -2008,7 +2008,7 @@ checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 [[package]]
 name = "jadex"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "async-graphql",
@@ -2028,7 +2028,7 @@ dependencies = [
 [[package]]
 name = "jamcodec"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "hex",
@@ -2827,7 +2827,7 @@ dependencies = [
 [[package]]
 name = "pvm"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "jamcodec",
@@ -2840,7 +2840,7 @@ dependencies = [
 [[package]]
 name = "pvm-parser"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "heck",
@@ -3121,7 +3121,7 @@ dependencies = [
 [[package]]
 name = "runtime"
 version = "0.1.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "hex",
@@ -3548,7 +3548,7 @@ dependencies = [
 [[package]]
 name = "spacejam"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3574,7 +3574,7 @@ dependencies = [
 [[package]]
 name = "spacejam-core"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "hex",
@@ -3590,7 +3590,7 @@ dependencies = [
 [[package]]
 name = "spacejam-crypto"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "ark-ec 0.5.0",
@@ -3609,7 +3609,7 @@ dependencies = [
 [[package]]
 name = "spacejam-metrics"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "prometheus-client",
@@ -3618,7 +3618,7 @@ dependencies = [
 [[package]]
 name = "spacejam-network"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "base32",
@@ -3643,7 +3643,7 @@ dependencies = [
 [[package]]
 name = "spacejam-offchain"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3661,7 +3661,7 @@ dependencies = [
 [[package]]
 name = "spacejam-rpc"
 version = "0.1.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "jsonrpsee",
@@ -3674,7 +3674,7 @@ dependencies = [
 [[package]]
 name = "spacejson"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "anyhow",
  "hex",
@@ -3686,7 +3686,7 @@ dependencies = [
 [[package]]
 name = "spacejson-derive"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
+source = "git+https://github.com/spacejamapp/spacejam#c6e7ac8bed21b4d9c8954a8bdd835584449b94eb"
 dependencies = [
  "proc-macro2",
  "quote",
