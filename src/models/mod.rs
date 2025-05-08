@@ -4,9 +4,9 @@
 //! the sugar interfaces of sqlx.
 
 mod epoch;
+mod extrinsic;
 mod header;
-mod ticket;
 
 pub use epoch::Epoch;
+pub use extrinsic::ticket::Ticket;
 pub use header::Header;
-pub use ticket::Ticket;
