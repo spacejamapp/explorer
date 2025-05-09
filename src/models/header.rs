@@ -11,6 +11,7 @@ pub struct Header {
     pub parent: String,
     pub parent_state_root: String,
     pub extrinsic_hash: String,
+    pub extrinsic_works: i32,
     pub author_index: i32,
     pub entropy_source: String,
     pub seal: String,
@@ -44,7 +45,12 @@ impl Header {
         Ok(data)
     }
 
-    pub async fn insert(pool: &PgPool, slot: i32, header: &JamHeader) -> Result<()> {
+    pub async fn insert(
+        pool: &PgPool,
+        slot: i32,
+        extrinsic_works: i32,
+        header: &JamHeader,
+    ) -> Result<()> {
         // save the block(header)
         let block_hash = hex::encode(header.hash()?);
         let parent = hex::encode(header.parent);
@@ -62,12 +68,13 @@ impl Header {
             .collect::<Vec<String>>();
 
         query!(
-            "INSERT INTO headers (slot,hash,parent,parent_state_root,extrinsic_hash,author_index,entropy_source,seal,offenders_mark) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+            "INSERT INTO headers (slot,hash,parent,parent_state_root,extrinsic_hash,extrinsic_works,author_index,entropy_source,seal,offenders_mark) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
                 slot,
                 block_hash,
                 parent,
                 parent_state_root,
                 extrinsic_hash,
+                extrinsic_works,
                 author_index as i32,
                 entroy_source,
                 seal,

@@ -11,6 +11,7 @@ mod epoch;
 mod guarantee;
 mod header;
 mod preimage;
+mod spacejam;
 mod ticket;
 
 pub use assurance::Assurance;
@@ -21,4 +22,5 @@ pub use epoch::Epoch;
 pub use guarantee::Guarantee;
 pub use header::Header;
 pub use preimage::Preimage;
+pub use spacejam::{GraphqlSpaceJam, SpaceJam};
 pub use ticket::Ticket;

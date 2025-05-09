@@ -23,7 +23,7 @@ impl Guarantee {
         Ok(data)
     }
 
-    pub async fn insert(pool: &PgPool, block: i32, guarantee: &ReportGuarantee) -> Result<()> {
+    pub async fn insert(pool: &PgPool, block: i32, guarantee: &ReportGuarantee) -> Result<i32> {
         let package_hash = hex::encode(&guarantee.report.spec.hash);
         let signatures = guarantee
             .signatures
@@ -32,6 +32,7 @@ impl Guarantee {
             .collect::<Vec<String>>();
 
         // TODO save work report
+        let num = guarantee.report.results.len() as i32;
 
         query!(
             "INSERT INTO guarantees (block,report,slot,signatures) VALUES ($1,$2,$3,$4)",
@@ -43,6 +44,6 @@ impl Guarantee {
         .execute(pool)
         .await?;
 
-        Ok(())
+        Ok(num)
     }
 }
