@@ -11,7 +11,7 @@ development script:
 cargo install sqlx-cli
 
 # after installed sqlx-cli
-export DATABASE_URL="postgres://postgres:postgres@localhost/jamscan"
+cp .env-template .env
 sqlx db create
 sqlx migrate run
 cargo sqlx prepare
