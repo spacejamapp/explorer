@@ -7,7 +7,7 @@ use sqlx::PgPool;
 
 use super::{
     Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee, Header,
-    Preimage, Ticket,
+    Preimage, SpaceJam, Ticket,
 };
 
 #[derive(SimpleObject, Serialize, Deserialize)]
@@ -17,6 +17,7 @@ pub struct BlockHeader {
     parent: String,
     parent_state_root: String,
     extrinsic_hash: String,
+    extrinsic_works: i32,
     author_index: i32,
     entropy_source: String,
     seal: String,
@@ -50,6 +51,7 @@ pub struct Block {
 }
 
 impl Block {
+    // FIXME split field to functions for optimizing the graphql query
     pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
         let raw: String = query_scalar!("SELECT raw FROM blocks WHERE slot = $1", slot)
             .fetch_one(pool)
@@ -65,6 +67,7 @@ impl Block {
             parent: header.parent,
             parent_state_root: header.parent_state_root,
             extrinsic_hash: header.extrinsic_hash,
+            extrinsic_works: header.extrinsic_works,
             author_index: header.author_index,
             entropy_source: header.entropy_source,
             seal: header.seal,
@@ -110,8 +113,6 @@ impl Block {
             .execute(pool)
             .await?;
 
-        Header::insert(pool, slot, &block.header).await?;
-
         // save epoch
         if let Some(epoch) = &block.header.epoch_mark {
             Epoch::insert(pool, slot, epoch).await?;
@@ -135,8 +136,10 @@ impl Block {
         }
 
         // save guarantee
+        let mut extrinsic_works = 0i32;
         for guarantee in block.extrinsic.guarantees.iter() {
-            Guarantee::insert(pool, slot, guarantee).await?;
+            let num = Guarantee::insert(pool, slot, guarantee).await?;
+            extrinsic_works += num;
         }
 
         // save assurance
@@ -159,6 +162,12 @@ impl Block {
         for fault in block.extrinsic.disputes.faults.iter() {
             DisputeFault::insert(pool, slot, fault).await?;
         }
+
+        // save header
+        Header::insert(pool, slot, extrinsic_works, &block.header).await?;
+
+        // save stats
+        SpaceJam::set_blocks(pool, slot, extrinsic_works).await?;
 
         Ok(())
     }
