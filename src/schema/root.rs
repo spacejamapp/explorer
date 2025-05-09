@@ -3,7 +3,7 @@
 use async_graphql::{Context, Object, Result};
 use sqlx::PgPool;
 
-use crate::models::{Epoch, Header, Ticket};
+use crate::models::{Block, Epoch, Header, Ticket};
 
 /// Query root for jamscan
 pub struct QueryRoot;

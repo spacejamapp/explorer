@@ -7,6 +7,7 @@ use sqlx::PgPool;
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Epoch {
     id: i32,
+    block: i32,
     entropy: String,
     tickets_entropy: String,
     validators: Vec<String>,
@@ -27,7 +28,7 @@ impl Epoch {
         Ok(data)
     }
 
-    pub async fn insert(pool: &PgPool, epoch: &EpochMark) -> Result<String> {
+    pub async fn insert(pool: &PgPool, block: i32, epoch: &EpochMark) -> Result<()> {
         let entropy = hex::encode(epoch.entropy);
         let tickets_entropy = hex::encode(epoch.tickets_entropy);
 
@@ -41,13 +42,14 @@ impl Epoch {
 
         // insert epoch
         query!(
-            "INSERT INTO epoches (entropy,tickets_entropy,validators,validators_bandersnatches) VALUES ($1,$2,$3,$4)",
+            "INSERT INTO epoches (block,entropy,tickets_entropy,validators,validators_bandersnatches) VALUES ($1,$2,$3,$4,$5)",
+            block,
             entropy,
             tickets_entropy,
             &validators,
             &validators_bandersnatches
         ).execute(pool).await?;
 
-        Ok(entropy)
+        Ok(())
     }
 }

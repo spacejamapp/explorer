@@ -2,7 +2,7 @@
 
 use sqlx::PgPool;
 
-use crate::models::Header;
+use crate::models::Block;
 
 /// Spacejam runtime hook for jamscan
 #[derive(Clone)]
@@ -23,10 +23,8 @@ impl From<PgPool> for JamScanHook {
 
 impl runtime::Hook for JamScanHook {
     async fn on_finalized_block(&self, block: score::Block) -> anyhow::Result<()> {
-        // save the header
-        Header::insert(&self.0, &block.header).await?;
-
-        // save the body(extrinsic)
+        // save the block
+        Block::insert(&self.0, &block).await?;
 
         Ok(())
     }
