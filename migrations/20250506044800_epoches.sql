@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS epoches (
   id SERIAL PRIMARY KEY,
   block INT NOT NULL REFERENCES blocks(slot),
-  entropy VARCHAR NOT NULL UNIQUE,
+  entropy VARCHAR NOT NULL,
   tickets_entropy VARCHAR NOT NULL,
   validators VARCHAR[] NOT NULL,
   validators_bandersnatches VARCHAR[] NOT NULL
