@@ -11,27 +11,42 @@ use super::{
 };
 
 #[derive(SimpleObject, Serialize, Deserialize)]
+pub struct BlockHeader {
+    slot: i32,
+    hash: String,
+    parent: String,
+    parent_state_root: String,
+    extrinsic_hash: String,
+    author_index: i32,
+    entropy_source: String,
+    seal: String,
+    offenders_mark: Vec<String>,
+    epoch_mark: Option<Epoch>,
+    tickets_mark: Vec<Ticket>,
+}
+
+#[derive(SimpleObject, Serialize, Deserialize)]
+pub struct BlockExtrinsic {
+    tickets: Vec<Envelope>,
+    preimages: Vec<Preimage>,
+    guarantees: Vec<Guarantee>,
+    assurances: Vec<Assurance>,
+    disputes: Dispute,
+}
+
+#[derive(SimpleObject, Serialize, Deserialize)]
+pub struct Dispute {
+    verdicts: Vec<DisputeVerdict>,
+    culprits: Vec<DisputeCulprit>,
+    faults: Vec<DisputeFault>,
+}
+
+#[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Block {
     slot: i32,
     raw: String,
-    // header: graphql
-    //   slot: i32,
-    //   hash: String,
-    //   parent: String,
-    //   parent_state_root: String,
-    //   extrinsic_hash: String,
-    //   author_index: i32,
-    //   entropy_source: String,
-    //   seal: String,
-    //   epoch_mark: Option<Epoch>,
-    //   tickets_mark: Vec<Ticket>,
-    //   offenders_mark: Vec<OffenderValidator>,
-    // extrinsic: graphql
-    //   tickets: Vec<Ticket>,
-    //   preimages: Vec<Preimage>,
-    //   guarantees: Vec<Guarantee>,
-    //   assurances: Vec<Assurance>,
-    //   disputes: Vec<Dispute>,
+    header: BlockHeader,
+    extrinsic: BlockExtrinsic,
 }
 
 impl Block {
@@ -40,15 +55,60 @@ impl Block {
             .fetch_one(pool)
             .await?;
 
-        // TODO header
-        // TODO extrinsic
+        // load header
+        let header = Header::get(pool, slot).await?;
+        let epoch = Epoch::get_by_block(pool, slot).await.ok();
+        let tickets = Ticket::list_by_block(pool, slot).await?;
+        let block_header = BlockHeader {
+            slot: header.slot,
+            hash: header.hash,
+            parent: header.parent,
+            parent_state_root: header.parent_state_root,
+            extrinsic_hash: header.extrinsic_hash,
+            author_index: header.author_index,
+            entropy_source: header.entropy_source,
+            seal: header.seal,
+            offenders_mark: header.offenders_mark,
+            epoch_mark: epoch,
+            tickets_mark: tickets,
+        };
 
-        Ok(Self { slot, raw })
+        // load extrinsic
+        let envelopes = Envelope::list_by_block(pool, slot).await?;
+        let preimages = Preimage::list_by_block(pool, slot).await?;
+        let guarantees = Guarantee::list_by_block(pool, slot).await?;
+        let assurances = Assurance::list_by_block(pool, slot).await?;
+        let verdicts = DisputeVerdict::list_by_block(pool, slot).await?;
+        let culprits = DisputeCulprit::list_by_block(pool, slot).await?;
+        let faults = DisputeFault::list_by_block(pool, slot).await?;
+        let disputes = Dispute {
+            verdicts,
+            culprits,
+            faults,
+        };
+        let extrinsic = BlockExtrinsic {
+            tickets: envelopes,
+            preimages,
+            guarantees,
+            assurances,
+            disputes,
+        };
+
+        Ok(Self {
+            slot,
+            raw,
+            header: block_header,
+            extrinsic,
+        })
     }
 
     pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<()> {
         let raw = serde_json::to_string(&block.clone().to_json()).unwrap_or("".to_owned());
         let slot = block.header.slot as i32;
+
+        query!("INSERT INTO blocks (slot,raw) VALUES ($1,$2)", slot, raw)
+            .execute(pool)
+            .await?;
 
         Header::insert(pool, slot, &block.header).await?;
 
@@ -99,10 +159,6 @@ impl Block {
         for fault in block.extrinsic.disputes.faults.iter() {
             DisputeFault::insert(pool, slot, fault).await?;
         }
-
-        query!("INSERT INTO blocks (slot,raw) VALUES ($1,$2)", slot, raw)
-            .execute(pool)
-            .await?;
 
         Ok(())
     }

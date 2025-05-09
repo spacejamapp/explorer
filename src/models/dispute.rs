@@ -9,7 +9,7 @@ pub struct DisputeVerdict {
     id: i32,
     block: i32,
     target: String,
-    aga: i32,
+    age: i32,
     // [true:1:xxxx, false:2:xxxx, true:3:xxxx]
     votes: Vec<String>,
 }
@@ -34,6 +34,14 @@ pub struct DisputeFault {
 }
 
 impl DisputeVerdict {
+    pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
+        let data = query_as!(Self, "SELECT * FROM dispute_verdicts WHERE block=$1", block)
+            .fetch_all(pool)
+            .await?;
+
+        Ok(data)
+    }
+
     pub async fn insert(pool: &PgPool, block: i32, verdict: &Verdict) -> Result<()> {
         let target = hex::encode(&verdict.target);
         let age = verdict.age as i32;
@@ -58,6 +66,14 @@ impl DisputeVerdict {
 }
 
 impl DisputeCulprit {
+    pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
+        let data = query_as!(Self, "SELECT * FROM dispute_culprits WHERE block=$1", block)
+            .fetch_all(pool)
+            .await?;
+
+        Ok(data)
+    }
+
     pub async fn insert(pool: &PgPool, block: i32, culprit: &Culprit) -> Result<()> {
         let target = hex::encode(&culprit.target);
         let key = hex::encode(&culprit.key);
@@ -78,6 +94,14 @@ impl DisputeCulprit {
 }
 
 impl DisputeFault {
+    pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
+        let data = query_as!(Self, "SELECT * FROM dispute_faults WHERE block=$1", block)
+            .fetch_all(pool)
+            .await?;
+
+        Ok(data)
+    }
+
     pub async fn insert(pool: &PgPool, block: i32, fault: &Fault) -> Result<()> {
         let target = hex::encode(&fault.target);
         let vote = fault.vote;

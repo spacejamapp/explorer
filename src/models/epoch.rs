@@ -15,7 +15,7 @@ pub struct Epoch {
 }
 
 impl Epoch {
-    pub async fn list(pool: &PgPool, offset: i64, limit: i64) -> Result<Vec<Self>> {
+    pub async fn _list(pool: &PgPool, offset: i64, limit: i64) -> Result<Vec<Self>> {
         let data = query_as!(
             Self,
             "SELECT * FROM epoches ORDER BY id DESC LIMIT $1 OFFSET $2",
@@ -24,6 +24,14 @@ impl Epoch {
         )
         .fetch_all(pool)
         .await?;
+
+        Ok(data)
+    }
+
+    pub async fn get_by_block(pool: &PgPool, block: i32) -> Result<Self> {
+        let data = query_as!(Self, "SELECT * FROM epoches WHERE block = $1", block)
+            .fetch_one(pool)
+            .await?;
 
         Ok(data)
     }

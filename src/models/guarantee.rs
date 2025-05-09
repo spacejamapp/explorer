@@ -15,15 +15,10 @@ pub struct Guarantee {
 }
 
 impl Guarantee {
-    pub async fn _list(pool: &PgPool, offset: i64, limit: i64) -> Result<Vec<Self>> {
-        let data = query_as!(
-            Self,
-            "SELECT * FROM guarantees ORDER BY id DESC LIMIT $1 OFFSET $2",
-            limit,
-            offset
-        )
-        .fetch_all(pool)
-        .await?;
+    pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
+        let data = query_as!(Self, "SELECT * FROM guarantees WHERE block=$1", block)
+            .fetch_all(pool)
+            .await?;
 
         Ok(data)
     }

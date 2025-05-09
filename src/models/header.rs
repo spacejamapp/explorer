@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use async_graphql::SimpleObject;
 use score::block::Header as JamHeader;
 use serde::{Deserialize, Serialize};
@@ -6,27 +6,40 @@ use sqlx::PgPool;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Header {
-    slot: i32,
-    hash: String,
-    parent: String,
-    parent_state_root: String,
-    extrinsic_hash: String,
-    author_index: i32,
-    entropy_source: String,
-    seal: String,
-    offenders_mark: Vec<String>,
+    pub slot: i32,
+    pub hash: String,
+    pub parent: String,
+    pub parent_state_root: String,
+    pub extrinsic_hash: String,
+    pub author_index: i32,
+    pub entropy_source: String,
+    pub seal: String,
+    pub offenders_mark: Vec<String>,
 }
 
 impl Header {
-    pub async fn list(pool: &PgPool, offset: i64, limit: i64) -> Result<Vec<Self>> {
+    pub async fn list(pool: &PgPool, from: i64, to: i64) -> Result<Vec<Self>> {
+        if to < from || to - from > 100 {
+            return Err(anyhow!("No more than 100 rows in a single query"));
+        }
+        let offset = if from < 0 { 1 } else { from - 1 };
+
         let data = query_as!(
             Self,
             "SELECT * FROM headers ORDER BY slot DESC LIMIT $1 OFFSET $2",
-            limit,
+            to - from,
             offset
         )
         .fetch_all(pool)
         .await?;
+
+        Ok(data)
+    }
+
+    pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
+        let data = query_as!(Self, "SELECT * FROM headers WHERE slot=$1", slot)
+            .fetch_one(pool)
+            .await?;
 
         Ok(data)
     }

@@ -13,15 +13,10 @@ pub struct Ticket {
 }
 
 impl Ticket {
-    pub async fn list(pool: &PgPool, offset: i64, limit: i64) -> Result<Vec<Self>> {
-        let data = query_as!(
-            Self,
-            "SELECT * FROM tickets ORDER BY id DESC LIMIT $1 OFFSET $2",
-            limit,
-            offset
-        )
-        .fetch_all(pool)
-        .await?;
+    pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
+        let data = query_as!(Self, "SELECT * FROM tickets WHERE block=$1", block)
+            .fetch_all(pool)
+            .await?;
 
         Ok(data)
     }
