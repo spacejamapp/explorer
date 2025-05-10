@@ -13,6 +13,7 @@ mod header;
 mod preimage;
 mod spacejam;
 mod ticket;
+mod validator;
 
 pub use assurance::Assurance;
 pub use block::Block;
@@ -24,3 +25,4 @@ pub use header::Header;
 pub use preimage::Preimage;
 pub use spacejam::{GraphqlSpaceJam, SpaceJam};
 pub use ticket::Ticket;
+pub use validator::Validator;

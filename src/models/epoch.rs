@@ -36,7 +36,7 @@ impl Epoch {
         Ok(data)
     }
 
-    pub async fn insert(pool: &PgPool, block: i32, epoch: &EpochMark) -> Result<()> {
+    pub async fn insert(pool: &PgPool, block: i32, epoch: &EpochMark) -> Result<i32> {
         let entropy = hex::encode(epoch.entropy);
         let tickets_entropy = hex::encode(epoch.tickets_entropy);
 
@@ -49,15 +49,15 @@ impl Epoch {
         }
 
         // insert epoch
-        query!(
-            "INSERT INTO epoches (block,entropy,tickets_entropy,validators,validators_bandersnatches) VALUES ($1,$2,$3,$4,$5)",
+        let epoch_id: i32 = query_scalar!(
+            "INSERT INTO epoches (block,entropy,tickets_entropy,validators,validators_bandersnatches) VALUES ($1,$2,$3,$4,$5) RETURNING id",
             block,
             entropy,
             tickets_entropy,
             &validators,
             &validators_bandersnatches
-        ).execute(pool).await?;
+        ).fetch_one(pool).await?;
 
-        Ok(())
+        Ok(epoch_id)
     }
 }

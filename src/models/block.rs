@@ -7,7 +7,7 @@ use sqlx::PgPool;
 
 use super::{
     Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee, Header,
-    Preimage, SpaceJam, Ticket,
+    Preimage, SpaceJam, Ticket, Validator,
 };
 
 #[derive(SimpleObject, Serialize, Deserialize)]
@@ -114,9 +114,11 @@ impl Block {
             .await?;
 
         // save epoch
-        if let Some(epoch) = &block.header.epoch_mark {
-            Epoch::insert(pool, slot, epoch).await?;
-        }
+        let epoch_id = if let Some(epoch) = &block.header.epoch_mark {
+            Some(Epoch::insert(pool, slot, epoch).await?)
+        } else {
+            None
+        };
 
         // save tickets
         if let Some(tickets) = &block.header.tickets_mark {
@@ -126,23 +128,27 @@ impl Block {
         }
 
         // FIXME if this ticket envelop is related to header's tickets
+        let tickets_num = block.extrinsic.tickets.len() as i32;
         for envelope in block.extrinsic.tickets.iter() {
             Envelope::insert(pool, slot, envelope).await?;
         }
 
         // save preimages
+        let preimages_num = block.extrinsic.preimages.len() as i32;
         for preimage in block.extrinsic.preimages.iter() {
             Preimage::insert(pool, slot, preimage).await?;
         }
 
         // save guarantee
         let mut extrinsic_works = 0i32;
+        let guarantees_num = block.extrinsic.guarantees.len() as i32;
         for guarantee in block.extrinsic.guarantees.iter() {
             let num = Guarantee::insert(pool, slot, guarantee).await?;
             extrinsic_works += num;
         }
 
         // save assurance
+        let assurances_num = block.extrinsic.assurances.len() as i32;
         for assurance in block.extrinsic.assurances.iter() {
             Assurance::insert(pool, slot, assurance).await?;
         }
@@ -163,11 +169,23 @@ impl Block {
             DisputeFault::insert(pool, slot, fault).await?;
         }
 
-        // save header
-        Header::insert(pool, slot, extrinsic_works, &block.header).await?;
-
         // save stats
-        SpaceJam::set_blocks(pool, slot, extrinsic_works).await?;
+        let current_epoch = SpaceJam::set_blocks(pool, slot, extrinsic_works, epoch_id).await?;
+
+        // save header
+        Header::insert(pool, slot, extrinsic_works, current_epoch, &block.header).await?;
+
+        // save validators
+        Validator::new_block(
+            pool,
+            current_epoch,
+            block.header.author_index as i32,
+            tickets_num,
+            preimages_num,
+            guarantees_num,
+            assurances_num,
+        )
+        .await?;
 
         Ok(())
     }
