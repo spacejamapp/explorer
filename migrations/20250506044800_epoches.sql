@@ -1,6 +1,6 @@
 -- Add migration script here
 CREATE TABLE IF NOT EXISTS epoches (
-  id SERIAL PRIMARY KEY,
+  id INT PRIMARY KEY,
   block INT NOT NULL REFERENCES blocks(slot),
   entropy VARCHAR NOT NULL,
   tickets_entropy VARCHAR NOT NULL,

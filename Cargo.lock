@@ -2049,6 +2049,7 @@ dependencies = [
  "runtime",
  "serde",
  "serde_json",
+ "spacejam",
  "spacejam-core",
  "spacejam-crypto",
  "spacejson",

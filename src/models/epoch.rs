@@ -1,6 +1,6 @@
 use anyhow::Result;
 use async_graphql::SimpleObject;
-use score::block::header::EpochMark;
+use score::{EPOCH_LENGTH, block::header::EpochMark};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
@@ -39,7 +39,6 @@ impl Epoch {
     pub async fn insert(pool: &PgPool, block: i32, epoch: &EpochMark) -> Result<i32> {
         let entropy = hex::encode(epoch.entropy);
         let tickets_entropy = hex::encode(epoch.tickets_entropy);
-
         // save validator, and use ed25519 as the primary key
         let mut validators = vec![];
         let mut validators_bandersnatches = vec![];
@@ -48,15 +47,33 @@ impl Epoch {
             validators_bandersnatches.push(hex::encode(validator.bandersnatch));
         }
 
-        // insert epoch
-        let epoch_id: i32 = query_scalar!(
-            "INSERT INTO epoches (block,entropy,tickets_entropy,validators,validators_bandersnatches) VALUES ($1,$2,$3,$4,$5) RETURNING id",
-            block,
-            entropy,
-            tickets_entropy,
-            &validators,
-            &validators_bandersnatches
-        ).fetch_one(pool).await?;
+        let epoch_id = block / EPOCH_LENGTH as i32 + 1;
+        if let Ok(_) = query_as!(Self, "SELECT * from epoches WHERE id = $1", epoch_id)
+            .fetch_one(pool)
+            .await
+        {
+            // update epoch TODO check epoch is valid
+            query!(
+                "UPDATE epoches SET block=$1,entropy=$2,tickets_entropy=$3,validators=$4,validators_bandersnatches=$5 WHERE id = $6",
+                block,
+                entropy,
+                tickets_entropy,
+                &validators,
+                &validators_bandersnatches,
+                epoch_id
+            ).execute(pool).await?;
+        } else {
+            // insert epoch
+            query!(
+                "INSERT INTO epoches (id, block,entropy,tickets_entropy,validators,validators_bandersnatches) VALUES ($1,$2,$3,$4,$5,$6)",
+                epoch_id,
+                block,
+                entropy,
+                tickets_entropy,
+                &validators,
+                &validators_bandersnatches
+            ).execute(pool).await?;
+        }
 
         Ok(epoch_id)
     }
