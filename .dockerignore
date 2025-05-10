@@ -1,0 +1,23 @@
+# Rust build artifacts
+/target/
+target/
+**/*.rs.bk
+
+# Git directory
+.git/
+
+# Docker files
+.dockerignore
+Dockerfile
+
+# Editor files
+**/.idea/
+**/.vscode/
+**/*.swp
+**/*.swo
+
+# Other
+**/.DS_Store
+.env
+jamscan.db/
+**/*.db 

@@ -1,0 +1,77 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM headers ORDER BY slot DESC LIMIT $1 OFFSET $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "slot",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "hash",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "parent",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "parent_state_root",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "extrinsic_hash",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "extrinsic_works",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "author_index",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "entropy_source",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "seal",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 9,
+        "name": "offenders_mark",
+        "type_info": "VarcharArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "31d23110b00ed9d55a18a3b3162d534fcea1844fb8f8350481bd4ecce507ebce"
+}
