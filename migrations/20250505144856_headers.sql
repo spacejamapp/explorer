@@ -9,5 +9,6 @@ CREATE TABLE IF NOT EXISTS headers (
   author_index INT NOT NULL,
   entropy_source VARCHAR NOT NULL,
   seal VARCHAR NOT NULL,
-  offenders_mark VARCHAR[] NOT NULL
+  offenders_mark VARCHAR[] NOT NULL,
+  current_epoch INT NOT NULL
 )

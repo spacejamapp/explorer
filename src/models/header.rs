@@ -16,6 +16,7 @@ pub struct Header {
     pub entropy_source: String,
     pub seal: String,
     pub offenders_mark: Vec<String>,
+    pub current_epoch: i32,
 }
 
 impl Header {
@@ -49,6 +50,7 @@ impl Header {
         pool: &PgPool,
         slot: i32,
         extrinsic_works: i32,
+        current_epoch: i32,
         header: &JamHeader,
     ) -> Result<()> {
         // save the block(header)
@@ -68,7 +70,7 @@ impl Header {
             .collect::<Vec<String>>();
 
         query!(
-            "INSERT INTO headers (slot,hash,parent,parent_state_root,extrinsic_hash,extrinsic_works,author_index,entropy_source,seal,offenders_mark) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+            "INSERT INTO headers (slot,hash,parent,parent_state_root,extrinsic_hash,extrinsic_works,author_index,entropy_source,seal,offenders_mark,current_epoch) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
                 slot,
                 block_hash,
                 parent,
@@ -79,6 +81,7 @@ impl Header {
                 entroy_source,
                 seal,
                 &offenders_mark,
+                current_epoch,
             )
             .execute(pool)
             .await?;

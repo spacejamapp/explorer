@@ -17,12 +17,12 @@ tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
 
 # spacejam dependencies
+jamcodec = { git = "ssh://git@github.com/spacejamapp/spacejam.git" }
 runtime = { git = "ssh://git@github.com/spacejamapp/spacejam.git" }
 score = { git = "ssh://git@github.com/spacejamapp/spacejam.git", package = "spacejam-core" }
 spacejam-crypto = { git = "ssh://git@github.com/spacejamapp/spacejam.git" }
 spacejson = { git = "ssh://git@github.com/spacejamapp/spacejam.git" }
 jadex = { git = "ssh://git@github.com/spacejamapp/spacejam.git" }
-
 
 [patch.crates-io]
 async-graphql = { version = "7.0.16", git = "https://github.com/yasamoka/async-graphql.git", branch = "graphiqlsource-react" }

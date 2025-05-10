@@ -5,6 +5,7 @@
 
 mod assurance;
 mod block;
+mod core;
 mod dispute;
 mod envelope;
 mod epoch;
@@ -13,9 +14,11 @@ mod header;
 mod preimage;
 mod spacejam;
 mod ticket;
+mod validator;
 
 pub use assurance::Assurance;
 pub use block::Block;
+pub use core::Core;
 pub use dispute::{DisputeCulprit, DisputeFault, DisputeVerdict};
 pub use envelope::Envelope;
 pub use epoch::Epoch;
@@ -24,3 +27,4 @@ pub use header::Header;
 pub use preimage::Preimage;
 pub use spacejam::{GraphqlSpaceJam, SpaceJam};
 pub use ticket::Ticket;
+pub use validator::Validator;

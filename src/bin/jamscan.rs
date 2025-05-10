@@ -58,11 +58,11 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let pool = PgPool::connect(&config.postgres).await?;
-    let hook = JamScanHook::from(pool.clone());
+    let hook = JamScanHook::new(pool.clone());
 
     tracing::info!("Running graphql server at {}", config.graphql);
     tokio::select! {
-        r = service::node::dev(&config, hook.clone()) => r,
+        r = service::node::dev(&config, hook) => r,
         r = service::graphql::start(
             QueryRoot,
             EmptyMutation,
