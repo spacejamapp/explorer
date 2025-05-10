@@ -10,7 +10,6 @@ development script:
 # if not installed
 cargo install sqlx-cli
 
-postgres://postgres@localhost/jamscan
 
 # after installed sqlx-cli
 cp .env-template .env

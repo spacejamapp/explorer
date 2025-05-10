@@ -24,7 +24,7 @@ struct Command {
     quic_port: u16,
 
     /// Chain data path
-    #[arg(long, env = "DATA_PATH", default_value = "jamscan.db")]
+    #[arg(long, env = "DATA_PATH", default_value = "jamscan_db")]
     data_path: PathBuf,
 }
 
