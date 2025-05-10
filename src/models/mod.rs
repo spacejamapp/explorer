@@ -5,6 +5,7 @@
 
 mod assurance;
 mod block;
+mod core;
 mod dispute;
 mod envelope;
 mod epoch;
@@ -17,6 +18,7 @@ mod validator;
 
 pub use assurance::Assurance;
 pub use block::Block;
+pub use core::Core;
 pub use dispute::{DisputeCulprit, DisputeFault, DisputeVerdict};
 pub use envelope::Envelope;
 pub use epoch::Epoch;

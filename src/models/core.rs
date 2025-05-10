@@ -1,0 +1,88 @@
+use anyhow::{Result, anyhow};
+use async_graphql::SimpleObject;
+use score::statistic::CoreActivityRecord;
+use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
+
+#[derive(SimpleObject, Serialize, Deserialize)]
+pub struct Core {
+    id: i32,
+    epoch: i32,
+    vindex: i32,
+    gas_used: i64,
+    imports: i32,
+    extrinsic_count: i32,
+    extrinsic_size: i32,
+    exports: i32,
+    bundle_size: i32,
+    da_load: i64,
+    popularity: i64,
+}
+
+impl Core {
+    pub async fn list_by_index(pool: &PgPool, index: i32, from: i64, to: i64) -> Result<Vec<Self>> {
+        if to < from || to - from > 100 {
+            return Err(anyhow!("No more than 100 rows in a single query"));
+        }
+        let offset = if from < 0 { 1 } else { from - 1 };
+
+        let data = query_as!(
+            Self,
+            "SELECT * FROM cores WHERE vindex = $1 ORDER BY id DESC LIMIT $2 OFFSET $3",
+            index,
+            to - from,
+            offset
+        )
+        .fetch_all(pool)
+        .await?;
+
+        Ok(data)
+    }
+
+    pub async fn statistic(
+        pool: &PgPool,
+        epoch: i32,
+        vindex: i32,
+        record: &CoreActivityRecord,
+    ) -> Result<()> {
+        if let Ok(c) = query_as!(
+            Self,
+            "SELECT * from cores WHERE vindex = $1 AND epoch = $2",
+            vindex,
+            epoch
+        )
+        .fetch_one(pool)
+        .await
+        {
+            query!(
+                "UPDATE cores SET gas_used=$1,imports=$2,extrinsic_count=$3,extrinsic_size=$4,exports=$5,bundle_size=$6,da_load=$7,popularity=$8 WHERE id = $9",
+                c.gas_used + record.gas_used as i64,
+                c.imports + record.imports as i32,
+                c.extrinsic_count + record.extrinsic_count as i32,
+                c.extrinsic_size + record.extrinsic_size as i32,
+                c.exports + record.exports as i32,
+                c.bundle_size + record.bundle_size as i32,
+                c.da_load + record.da_load as i64,
+                c.popularity + record.popularity as i64,
+                c.id
+            ).execute(pool).await?;
+        } else {
+            // insert epoch
+            query!(
+                "INSERT INTO cores (epoch,vindex,gas_used,imports,extrinsic_count,extrinsic_size,exports,bundle_size,da_load,popularity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+                epoch,
+                vindex,
+                record.gas_used as i64,
+                record.imports as i32,
+                record.extrinsic_count as i32,
+                record.extrinsic_size as i32,
+                record.exports as i32,
+                record.bundle_size as i32,
+                record.da_load as i64,
+                record.popularity as i64,
+            ).execute(pool).await?;
+        }
+
+        Ok(())
+    }
+}

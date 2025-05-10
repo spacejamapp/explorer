@@ -8,7 +8,7 @@ use score::{
 use sqlx::PgPool;
 use std::collections::{BTreeMap, HashMap};
 
-use crate::models::{Block, Epoch};
+use crate::models::{Block, Core, Epoch};
 
 /// Spacejam runtime hook for jamscan
 pub struct JamScanHook(PgPool);
@@ -35,7 +35,7 @@ impl runtime::Hook for JamScanHook {
         diff: HashMap<OpaqueHash, Vec<u8>>,
     ) -> impl Future<Output = Result<()>> {
         async move {
-            let mut epoch = 0;
+            let mut epoch = 0i32;
             let mut statistics = Statistics::default();
 
             let mut data = BTreeMap::new();
@@ -49,7 +49,7 @@ impl runtime::Hook for JamScanHook {
                     let mut bytes = [0u8; 4];
                     bytes.copy_from_slice(&value);
                     let slot = TimeSlot::from_le_bytes(bytes);
-                    epoch = slot / EPOCH_LENGTH + 1;
+                    epoch = (slot / EPOCH_LENGTH + 1) as i32;
                     continue;
                 }
 
@@ -115,6 +115,7 @@ impl runtime::Hook for JamScanHook {
             println!("epoch: {}", epoch);
             println!("statistics: {}", statistics.vals_current.len());
 
+            // update epoch statistics
             let mut blocks = 0;
             let mut tickets = 0;
             let mut preimages = 0;
@@ -131,7 +132,7 @@ impl runtime::Hook for JamScanHook {
             }
             let _ = Epoch::statistic(
                 &self.0,
-                epoch as i32,
+                epoch,
                 blocks as i32,
                 tickets as i32,
                 preimages as i32,
@@ -140,6 +141,11 @@ impl runtime::Hook for JamScanHook {
                 assurances as i32,
             )
             .await;
+
+            // update core statistics
+            for (index, core) in statistics.cores.iter().enumerate() {
+                let _ = Core::statistic(&self.0, epoch, index as i32, core).await;
+            }
 
             // handle service data
 

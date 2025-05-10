@@ -3,7 +3,7 @@
 use async_graphql::{Context, Object, Result};
 use sqlx::PgPool;
 
-use crate::models::{Block, Epoch, GraphqlSpaceJam, Header, Validator};
+use crate::models::{Block, Core, Epoch, GraphqlSpaceJam, Header, Validator};
 
 /// Query root for jamscan
 pub struct QueryRoot;
@@ -50,5 +50,11 @@ impl QueryRoot {
         let pool = ctx.data::<PgPool>()?;
         let block = Validator::list_by_vindex(pool, vindex, from, to).await?;
         Ok(block)
+    }
+
+    async fn core(&self, ctx: &Context<'_>, index: i32, from: i64, to: i64) -> Result<Vec<Core>> {
+        let pool = ctx.data::<PgPool>()?;
+        let cores = Core::list_by_index(pool, index, from, to).await?;
+        Ok(cores)
     }
 }
