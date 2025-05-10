@@ -1,7 +1,7 @@
 //! Stores header data in postgres
 
 use async_graphql::{EmptyMutation, EmptySubscription};
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use jadex::{Config, service};
 use jamscan::{JamScanHook, schema::QueryRoot};
 use sqlx::PgPool;
@@ -26,6 +26,10 @@ struct Command {
     /// Chain data path
     #[arg(long, env = "DATA_PATH", default_value = "jamscan_db")]
     data_path: PathBuf,
+
+    /// Verbosity level
+    #[arg(long, env = "VERBOSE", default_value = "0")]
+    verbose: u8,
 }
 
 #[tokio::main]
@@ -34,7 +38,16 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .init();
+
     let args = Command::parse();
+    let name = Command::command().get_name().to_string();
+    let env = EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new(match args.verbose {
+        0 => format!("{name}=info,jamdex=info"),
+        1 => format!("{name}=debug,jamdex=debug"),
+        2 => "debug".into(),
+        _ => "trace".into(),
+    }));
+    tracing_subscriber::fmt().with_env_filter(env).init();
 
     let config = Config {
         postgres: args.database,
