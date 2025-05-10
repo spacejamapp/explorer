@@ -1,20 +1,22 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT hash FROM headers",
+  "query": "SELECT raw FROM blocks WHERE slot = $1",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "hash",
+        "name": "raw",
         "type_info": "Text"
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int4"
+      ]
     },
     "nullable": [
       false
     ]
   },
-  "hash": "d664e832ce200f8fe53fa822ae82ef4361643f9dabf3621f30eb79ee8e2e2517"
+  "hash": "3d683f847f541a5c6b3292c7dc347ab6c0c0af3467822d0c32dd4bc4cafbbe5c"
 }

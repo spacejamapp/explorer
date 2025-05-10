@@ -1,0 +1,76 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM headers WHERE slot=$1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "slot",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "hash",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "parent",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "parent_state_root",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "extrinsic_hash",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "extrinsic_works",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "author_index",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "entropy_source",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "seal",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 9,
+        "name": "offenders_mark",
+        "type_info": "VarcharArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "bd82a6e4d74c28b42a331c8565493b4c27912b536276d5f33d63b6bfb7ed42ce"
+}
