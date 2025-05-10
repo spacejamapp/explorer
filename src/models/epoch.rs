@@ -12,6 +12,12 @@ pub struct Epoch {
     tickets_entropy: String,
     validators: Vec<String>,
     validators_bandersnatches: Vec<String>,
+    blocks: i32,
+    tickets: i32,
+    preimages: i32,
+    preimages_size: i32,
+    guarantees: i32,
+    assurances: i32,
 }
 
 impl Epoch {
@@ -24,6 +30,14 @@ impl Epoch {
         )
         .fetch_all(pool)
         .await?;
+
+        Ok(data)
+    }
+
+    pub async fn get(pool: &PgPool, id: i32) -> Result<Self> {
+        let data = query_as!(Self, "SELECT * FROM epoches WHERE id = $1", id)
+            .fetch_one(pool)
+            .await?;
 
         Ok(data)
     }
@@ -76,5 +90,29 @@ impl Epoch {
         }
 
         Ok(epoch_id)
+    }
+
+    pub async fn statistic(
+        pool: &PgPool,
+        id: i32,
+        blocks: i32,
+        tickets: i32,
+        preimages: i32,
+        preimages_size: i32,
+        guarantees: i32,
+        assurances: i32,
+    ) -> Result<()> {
+        query!(
+            "UPDATE epoches SET blocks=$1,tickets=$2,preimages=$3,preimages_size=$4,guarantees=$5,assurances=$6 WHERE id = $7",
+            blocks,
+            tickets,
+            preimages,
+            preimages_size,
+            guarantees,
+            assurances,
+            id
+        ).execute(pool).await?;
+
+        Ok(())
     }
 }

@@ -3,9 +3,6 @@
 #[macro_use]
 extern crate sqlx;
 
-#[macro_use]
-extern crate tracing;
-
 pub use hook::JamScanHook;
 
 mod hook;

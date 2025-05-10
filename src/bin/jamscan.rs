@@ -4,7 +4,6 @@ use async_graphql::{EmptyMutation, EmptySubscription};
 use clap::Parser;
 use jadex::{Config, service};
 use jamscan::{JamScanHook, schema::QueryRoot};
-use spacejam::storage::Sled;
 use sqlx::PgPool;
 use std::{net::SocketAddr, path::PathBuf};
 use tracing_subscriber::EnvFilter;
@@ -37,7 +36,6 @@ async fn main() -> anyhow::Result<()> {
         .init();
     let args = Command::parse();
 
-    let storage = Sled::try_from(args.data_path.clone())?;
     let config = Config {
         postgres: args.database,
         data: args.data_path,
@@ -47,7 +45,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let pool = PgPool::connect(&config.postgres).await?;
-    let hook = JamScanHook::new(pool.clone(), storage);
+    let hook = JamScanHook::new(pool.clone());
 
     tracing::info!("Running graphql server at {}", config.graphql);
     tokio::select! {

@@ -3,7 +3,7 @@
 use async_graphql::{Context, Object, Result};
 use sqlx::PgPool;
 
-use crate::models::{Block, GraphqlSpaceJam, Header, Validator};
+use crate::models::{Block, Epoch, GraphqlSpaceJam, Header, Validator};
 
 /// Query root for jamscan
 pub struct QueryRoot;
@@ -20,6 +20,12 @@ impl QueryRoot {
         let pool = ctx.data::<PgPool>()?;
         let block = Block::get(pool, slot).await?;
         Ok(block)
+    }
+
+    async fn epoch(&self, ctx: &Context<'_>, id: i32) -> Result<Epoch> {
+        let pool = ctx.data::<PgPool>()?;
+        let epoch = Epoch::get(pool, id).await?;
+        Ok(epoch)
     }
 
     async fn spacejam(&self, ctx: &Context<'_>) -> Result<GraphqlSpaceJam> {
