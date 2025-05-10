@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM assurances WHERE block=$1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "block",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "anchor",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "bitfield",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "validator_index",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "signature",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3a3d4a5f294346746da87a0948ae77ff16225869e1b44c86b3d8e2172c71135e"
+}

@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM dispute_faults WHERE block=$1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "block",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "target",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "vote",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 4,
+        "name": "key",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "signature",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "0eb0a4adaa760e7c94ba1a35cd8a636313407b0339cb7cd719f9bfe4fdca049c"
+}

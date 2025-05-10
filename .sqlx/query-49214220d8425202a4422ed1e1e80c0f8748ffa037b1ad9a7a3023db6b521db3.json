@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM epoches WHERE block = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "block",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "entropy",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "tickets_entropy",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "validators",
+        "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 5,
+        "name": "validators_bandersnatches",
+        "type_info": "VarcharArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "49214220d8425202a4422ed1e1e80c0f8748ffa037b1ad9a7a3023db6b521db3"
+}

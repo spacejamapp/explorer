@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO guarantees (block,report,slot,signatures) VALUES ($1,$2,$3,$4)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Int4",
+        "VarcharArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5700900cdf872d427488dfbe2be6394bb352ba0fc433e0048c876c8f9e21f2b0"
+}
