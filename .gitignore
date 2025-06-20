@@ -1,6 +1,3 @@
-docker
-jamscan
-jamscan_db
 jamscan.db
 postgres_data
 target

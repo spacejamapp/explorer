@@ -44,8 +44,6 @@ pub struct Dispute {
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Block {
-    slot: i32,
-    raw: String,
     header: BlockHeader,
     extrinsic: BlockExtrinsic,
 }
@@ -53,10 +51,6 @@ pub struct Block {
 impl Block {
     // FIXME split field to functions for optimizing the graphql query
     pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
-        let raw: String = query_scalar!("SELECT raw FROM blocks WHERE slot = $1", slot)
-            .fetch_one(pool)
-            .await?;
-
         // load header
         let header = Header::get(pool, slot).await?;
         let epoch = Epoch::get_by_block(pool, slot).await.ok();
@@ -98,8 +92,6 @@ impl Block {
         };
 
         Ok(Self {
-            slot,
-            raw,
             header: block_header,
             extrinsic,
         })
