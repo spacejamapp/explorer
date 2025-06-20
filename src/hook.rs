@@ -1,14 +1,14 @@
 //! SpaceJam runtime hook for jamscan
 
+use crate::models::{Block, Core, Epoch};
 use anyhow::Result;
+use runtime::storage::Commit;
 use score::{
     Block as JamBlock, EPOCH_LENGTH, OpaqueHash, ServiceId, TimeSlot, state::key,
     statistic::Statistics,
 };
 use sqlx::PgPool;
-use std::collections::{BTreeMap, HashMap};
-
-use crate::models::{Block, Core, Epoch};
+use std::collections::BTreeMap;
 
 /// Spacejam runtime hook for jamscan
 pub struct JamScanHook(PgPool);
@@ -22,40 +22,37 @@ impl JamScanHook {
 
 impl runtime::Hook for JamScanHook {
     async fn on_finalized_block(&self, block: JamBlock) -> Result<()> {
-        println!("block: {}", block.header.slot);
-        // save the block
         Block::insert(&self.0, &block).await?;
-
         Ok(())
     }
 
     fn on_diff(
         &self,
         hash: OpaqueHash,
-        diff: HashMap<OpaqueHash, Vec<u8>>,
+        diff: Commit<[u8; 31], Vec<u8>>,
     ) -> impl Future<Output = Result<()>> {
         async move {
             let mut epoch = 0i32;
             let mut statistics = Statistics::default();
-
             let mut data = BTreeMap::new();
             let mut preimage = BTreeMap::new();
             let mut request = BTreeMap::new();
             let mut svalue = BTreeMap::new();
 
-            for (key, value) in diff {
+            for (key, value) in diff.iset() {
                 // get current timeslot
-                if key == key::TIMESLOT {
+                if *key == key::TIMESLOT {
                     let mut bytes = [0u8; 4];
-                    bytes.copy_from_slice(&value);
+                    bytes.copy_from_slice(value);
                     let slot = TimeSlot::from_le_bytes(bytes);
                     epoch = (slot / EPOCH_LENGTH + 1) as i32;
+                    tracing::debug!("epoch: {epoch}, slot: {slot}");
                     continue;
                 }
 
                 // get current statistics data
-                if key == key::STATISTICS {
-                    statistics = jamcodec::decode(&value)?;
+                if *key == key::STATISTICS {
+                    statistics = jamcodec::decode(value)?;
                     continue;
                 }
 
@@ -65,7 +62,7 @@ impl runtime::Hook for JamScanHook {
                 }
 
                 // call the hook
-                self.on_key_value(hash, key, &value)?;
+                self.on_key_value(hash, *key, value)?;
 
                 // service info storage
                 if key[8..].iter().all(|b| *b == 0) {
@@ -112,9 +109,6 @@ impl runtime::Hook for JamScanHook {
                 }
             }
 
-            println!("epoch: {}", epoch);
-            println!("statistics: {}", statistics.vals_current.len());
-
             // update epoch statistics
             let mut blocks = 0;
             let mut tickets = 0;
@@ -148,11 +142,8 @@ impl runtime::Hook for JamScanHook {
             }
 
             // handle service data
-
             // handle service value
-
             // handle service preimage
-
             // handle service request
 
             Ok(())

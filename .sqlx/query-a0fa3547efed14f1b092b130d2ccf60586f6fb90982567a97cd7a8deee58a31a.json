@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE validators SET blocks=$1,tickets=$2,preimages=$3,guarantees=$4,assurances=$5 WHERE id=$6",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int4",
+        "Int4",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a0fa3547efed14f1b092b130d2ccf60586f6fb90982567a97cd7a8deee58a31a"
+}

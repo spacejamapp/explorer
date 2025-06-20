@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM epoches WHERE block = $1",
+  "query": "SELECT * FROM cores WHERE vindex = $1 ORDER BY id DESC LIMIT $2 OFFSET $3",
   "describe": {
     "columns": [
       {
@@ -10,63 +10,60 @@
       },
       {
         "ordinal": 1,
-        "name": "block",
+        "name": "epoch",
         "type_info": "Int4"
       },
       {
         "ordinal": 2,
-        "name": "entropy",
-        "type_info": "Varchar"
+        "name": "vindex",
+        "type_info": "Int4"
       },
       {
         "ordinal": 3,
-        "name": "tickets_entropy",
-        "type_info": "Varchar"
+        "name": "gas_used",
+        "type_info": "Int8"
       },
       {
         "ordinal": 4,
-        "name": "validators",
-        "type_info": "VarcharArray"
+        "name": "imports",
+        "type_info": "Int4"
       },
       {
         "ordinal": 5,
-        "name": "validators_bandersnatches",
-        "type_info": "VarcharArray"
+        "name": "extrinsic_count",
+        "type_info": "Int4"
       },
       {
         "ordinal": 6,
-        "name": "blocks",
+        "name": "extrinsic_size",
         "type_info": "Int4"
       },
       {
         "ordinal": 7,
-        "name": "tickets",
+        "name": "exports",
         "type_info": "Int4"
       },
       {
         "ordinal": 8,
-        "name": "preimages",
+        "name": "bundle_size",
         "type_info": "Int4"
       },
       {
         "ordinal": 9,
-        "name": "preimages_size",
-        "type_info": "Int4"
+        "name": "da_load",
+        "type_info": "Int8"
       },
       {
         "ordinal": 10,
-        "name": "guarantees",
-        "type_info": "Int4"
-      },
-      {
-        "ordinal": 11,
-        "name": "assurances",
-        "type_info": "Int4"
+        "name": "popularity",
+        "type_info": "Int8"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Int4",
+        "Int8",
+        "Int8"
       ]
     },
     "nullable": [
@@ -80,9 +77,8 @@
       false,
       false,
       false,
-      false,
       false
     ]
   },
-  "hash": "49214220d8425202a4422ed1e1e80c0f8748ffa037b1ad9a7a3023db6b521db3"
+  "hash": "21ad919aca611bba2071366c7f0c1c2f1bb24fdbc6513bbaedaf024875f0e276"
 }

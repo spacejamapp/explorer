@@ -35,9 +35,6 @@ struct Command {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();
-    tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::from_default_env())
-        .init();
 
     let args = Command::parse();
     let name = Command::command().get_name().to_string();
@@ -52,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
     let config = Config {
         postgres: args.database,
         data: args.data_path,
-        genesis: None,
+        spec: None,
         graphql: SocketAddr::from(([0, 0, 0, 0], args.graphql_port)),
         quic: SocketAddr::from(([0, 0, 0, 0], args.quic_port)),
     };

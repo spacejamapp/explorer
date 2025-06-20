@@ -52,6 +52,11 @@
         "ordinal": 9,
         "name": "offenders_mark",
         "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 10,
+        "name": "current_epoch",
+        "type_info": "Int4"
       }
     ],
     "parameters": {
@@ -60,6 +65,7 @@
       ]
     },
     "nullable": [
+      false,
       false,
       false,
       false,
