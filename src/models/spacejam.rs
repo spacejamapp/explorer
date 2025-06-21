@@ -21,7 +21,6 @@ impl SpaceJam {
         let epoch = info.next().unwrap_or("0").parse::<i32>().unwrap_or(0);
         let finalized = info.next().unwrap_or("0").parse::<i32>().unwrap_or(0);
         let extrinsic = info.next().unwrap_or("0").parse::<i64>().unwrap_or(0);
-
         Ok((epoch, finalized, extrinsic))
     }
 

@@ -2,7 +2,10 @@
 
 use async_graphql::{EmptyMutation, EmptySubscription};
 use clap::{CommandFactory, Parser};
-use jadex::{Config, service};
+use jadex::{
+    config::{Config, Cors, Graphql, Node},
+    service,
+};
 use jamscan::{JamScanHook, schema::QueryRoot};
 use sqlx::PgPool;
 use std::{net::SocketAddr, path::PathBuf};
@@ -48,16 +51,21 @@ async fn main() -> anyhow::Result<()> {
 
     let config = Config {
         postgres: args.database,
-        data: args.data_path,
-        spec: None,
-        graphql: SocketAddr::from(([0, 0, 0, 0], args.graphql_port)),
-        quic: SocketAddr::from(([0, 0, 0, 0], args.quic_port)),
+        node: Node {
+            data: args.data_path,
+            spec: None,
+            quic: SocketAddr::from(([0, 0, 0, 0], args.quic_port)),
+        },
+        graphql: Graphql {
+            cors: Cors::default(),
+            graphql: SocketAddr::from(([0, 0, 0, 0], args.graphql_port)),
+        },
     };
 
     let pool = PgPool::connect(&config.postgres).await?;
     let hook = JamScanHook::new(pool.clone());
 
-    tracing::info!("Running graphql server at {}", config.graphql);
+    tracing::info!("Running graphql server at {}", config.graphql.graphql);
     tokio::select! {
         r = service::node::dev(&config, hook) => r,
         r = service::graphql::start(
@@ -65,7 +73,7 @@ async fn main() -> anyhow::Result<()> {
             EmptyMutation,
             EmptySubscription,
             pool,
-            config.graphql,
+            &config.graphql,
         ) => r,
         _ = tokio::signal::ctrl_c() => Ok(()),
     }

@@ -1,9 +1,8 @@
 //! The query root for jamscan
 
+use crate::models::{Block, Core, Epoch, GraphqlSpaceJam, Header, Validator};
 use async_graphql::{Context, Object, Result};
 use sqlx::PgPool;
-
-use crate::models::{Block, Core, Epoch, GraphqlSpaceJam, Header, Validator};
 
 /// Query root for jamscan
 pub struct QueryRoot;
