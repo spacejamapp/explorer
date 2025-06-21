@@ -1,5 +1,5 @@
 -- Add migration script here
-CREATE TABLE IF NOT EXISTS epoches (
+CREATE TABLE IF NOT EXISTS epochs (
   id INT PRIMARY KEY,
   block INT NOT NULL REFERENCES blocks(slot),
   entropy VARCHAR NOT NULL, -- TODO: should be unique in production
@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS epoches (
   guarantees INT NOT NULL DEFAULT 0,
   assurances INT NOT NULL DEFAULT 0
 );
-CREATE INDEX idx_epoches_block ON epoches (block);
+CREATE INDEX idx_epochs_block ON epochs (block);

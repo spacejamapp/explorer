@@ -60,7 +60,7 @@ impl Header {
         let parent_state_root = hex::encode(header.parent_state_root);
         let extrinsic_hash = hex::encode(header.extrinsic_hash);
         let author_index = header.author_index;
-        let entroy_source = hex::encode(header.entropy_source);
+        let entropy_source = hex::encode(header.entropy_source);
         let seal = hex::encode(header.seal);
 
         // FIXME if need save the offenders for validators?
@@ -79,7 +79,7 @@ impl Header {
                 extrinsic_hash,
                 extrinsic_count,
                 author_index as i32,
-                entroy_source,
+                entropy_source,
                 seal,
                 &offenders_mark,
                 current_epoch,
