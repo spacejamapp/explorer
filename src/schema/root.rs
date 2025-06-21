@@ -9,16 +9,17 @@ pub struct QueryRoot;
 
 #[Object]
 impl QueryRoot {
-    async fn blocks(&self, ctx: &Context<'_>, from: i64, to: i64) -> Result<Vec<Header>> {
+    async fn headers(&self, ctx: &Context<'_>, from: i64, to: i64) -> Result<Vec<Header>> {
         let pool = ctx.data::<PgPool>()?;
         let data = Header::list(pool, from, to).await?;
         Ok(data)
     }
 
-    async fn block(&self, ctx: &Context<'_>, slot: i32) -> Result<Block> {
+    /// Get the raw block data from the database.
+    async fn block(&self, ctx: &Context<'_>, slot: i32) -> Result<String> {
         let pool = ctx.data::<PgPool>()?;
-        let block = Block::get(pool, slot).await?;
-        Ok(block)
+        let raw = Block::raw(pool, slot).await?;
+        Ok(raw)
     }
 
     async fn epoch(&self, ctx: &Context<'_>, id: i32) -> Result<Epoch> {

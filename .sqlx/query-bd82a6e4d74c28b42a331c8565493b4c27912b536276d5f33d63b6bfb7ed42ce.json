@@ -30,7 +30,7 @@
       },
       {
         "ordinal": 5,
-        "name": "extrinsic_works",
+        "name": "extrinsic_count",
         "type_info": "Int4"
       },
       {

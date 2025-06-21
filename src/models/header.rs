@@ -11,7 +11,7 @@ pub struct Header {
     pub parent: String,
     pub parent_state_root: String,
     pub extrinsic_hash: String,
-    pub extrinsic_works: i32,
+    pub extrinsic_count: i32,
     pub author_index: i32,
     pub entropy_source: String,
     pub seal: String,
@@ -38,6 +38,7 @@ impl Header {
         Ok(data)
     }
 
+    /// NOTE: this will not being used, consider remove it.
     pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
         let data = query_as!(Self, "SELECT * FROM headers WHERE slot=$1", slot)
             .fetch_one(pool)
@@ -49,7 +50,7 @@ impl Header {
     pub async fn insert(
         pool: &PgPool,
         slot: i32,
-        extrinsic_works: i32,
+        extrinsic_count: i32,
         current_epoch: i32,
         header: &JamHeader,
     ) -> Result<()> {
@@ -70,13 +71,13 @@ impl Header {
             .collect::<Vec<String>>();
 
         query!(
-            "INSERT INTO headers (slot,hash,parent,parent_state_root,extrinsic_hash,extrinsic_works,author_index,entropy_source,seal,offenders_mark,current_epoch) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+            "INSERT INTO headers (slot,hash,parent,parent_state_root,extrinsic_hash,extrinsic_count,author_index,entropy_source,seal,offenders_mark,current_epoch) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
                 slot,
                 block_hash,
                 parent,
                 parent_state_root,
                 extrinsic_hash,
-                extrinsic_works,
+                extrinsic_count,
                 author_index as i32,
                 entroy_source,
                 seal,

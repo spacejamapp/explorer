@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS headers (
   parent VARCHAR NOT NULL,
   parent_state_root VARCHAR NOT NULL,
   extrinsic_hash VARCHAR NOT NULL,
-  extrinsic_works INT NOT NULL,
+  extrinsic_count INT NOT NULL,
   author_index INT NOT NULL,
   entropy_source VARCHAR NOT NULL,
   seal VARCHAR NOT NULL,
