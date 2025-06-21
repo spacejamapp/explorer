@@ -1989,7 +1989,7 @@ checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 [[package]]
 name = "jadex"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "async-graphql",
@@ -2013,7 +2013,7 @@ dependencies = [
 [[package]]
 name = "jamcodec"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "serde",
@@ -2030,6 +2030,7 @@ dependencies = [
  "hex",
  "jadex",
  "jamcodec",
+ "redis",
  "serde",
  "serde_json",
  "spacejam-core",
@@ -2883,7 +2884,7 @@ dependencies = [
 [[package]]
 name = "pvm"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "hex",
@@ -2898,7 +2899,7 @@ dependencies = [
 [[package]]
 name = "pvm-parser"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "heck",
@@ -3074,6 +3075,22 @@ dependencies = [
  "time",
  "x509-parser",
  "yasna",
+]
+
+[[package]]
+name = "redis"
+version = "0.32.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f2f6fd3fd5bb3a9a48819ae5cbad501968f208c1abd139649e7e2cf5d7f4b40b"
+dependencies = [
+ "combine",
+ "itoa",
+ "num-bigint",
+ "percent-encoding",
+ "ryu",
+ "sha1_smol",
+ "socket2",
+ "url",
 ]
 
 [[package]]
@@ -3485,6 +3502,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "sha1_smol"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbfa15b3dddfee50a0fff136974b3e1bde555604ba463834a7eb7deb6417705d"
+
+[[package]]
 name = "sha2"
 version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3595,7 +3618,7 @@ dependencies = [
 [[package]]
 name = "spacejam"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3623,7 +3646,7 @@ dependencies = [
 [[package]]
 name = "spacejam-core"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "hex",
@@ -3637,7 +3660,7 @@ dependencies = [
 [[package]]
 name = "spacejam-crypto"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "ark-ec 0.5.0",
@@ -3656,7 +3679,7 @@ dependencies = [
 [[package]]
 name = "spacejam-metrics"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "prometheus-client",
@@ -3665,7 +3688,7 @@ dependencies = [
 [[package]]
 name = "spacejam-network"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "clap",
@@ -3690,7 +3713,7 @@ dependencies = [
 [[package]]
 name = "spacejam-offchain"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3708,7 +3731,7 @@ dependencies = [
 [[package]]
 name = "spacejam-rpc"
 version = "0.1.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "jsonrpsee",
@@ -3721,7 +3744,7 @@ dependencies = [
 [[package]]
 name = "spacejam-runtime"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "hex",
@@ -3739,7 +3762,7 @@ dependencies = [
 [[package]]
 name = "spacejson"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "anyhow",
  "hex",
@@ -3750,7 +3773,7 @@ dependencies = [
 [[package]]
 name = "spacejson-derive"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#7ebc8da22b52d5218a8d2046848b1e86b697e991"
+source = "git+ssh://git@github.com/spacejamapp/spacejam.git?branch=jamscan#1e18872440ac98f2e06113c5e4230e22ed8bde12"
 dependencies = [
  "proc-macro2",
  "quote",

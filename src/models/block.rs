@@ -58,9 +58,6 @@ impl Block {
     }
 
     // FIXME split field to functions for optimizing the graphql query
-    //
-    // NOTE: this query is too expensive, consider returning the raw value and ask
-    // the frontend to parse the data.
     #[allow(dead_code)]
     pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
         // load header

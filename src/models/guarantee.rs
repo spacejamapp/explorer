@@ -24,7 +24,7 @@ impl Guarantee {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, guarantee: &ReportGuarantee) -> Result<i32> {
-        let package_hash = hex::encode(&guarantee.report.spec.hash);
+        let package_hash = hex::encode(guarantee.report.spec.hash);
         let signatures = guarantee
             .signatures
             .iter()

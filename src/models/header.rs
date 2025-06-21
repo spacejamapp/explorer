@@ -67,7 +67,7 @@ impl Header {
         let offenders_mark = header
             .offenders_mark
             .iter()
-            .map(|v| hex::encode(v))
+            .map(hex::encode)
             .collect::<Vec<String>>();
 
         query!(

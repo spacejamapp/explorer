@@ -16,10 +16,18 @@ impl QueryRoot {
     }
 
     /// Get the raw block data from the database.
-    async fn block(&self, ctx: &Context<'_>, slot: i32) -> Result<String> {
+    #[graphql(name = "blockRaw")]
+    async fn block_raw(&self, ctx: &Context<'_>, slot: i32) -> Result<String> {
         let pool = ctx.data::<PgPool>()?;
         let raw = Block::raw(pool, slot).await?;
         Ok(raw)
+    }
+
+    /// Get the block data from the database.
+    async fn block(&self, ctx: &Context<'_>, slot: i32) -> Result<Block> {
+        let pool = ctx.data::<PgPool>()?;
+        let block = Block::get(pool, slot).await?;
+        Ok(block)
     }
 
     async fn epoch(&self, ctx: &Context<'_>, id: i32) -> Result<Epoch> {

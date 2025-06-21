@@ -1,28 +1,20 @@
-//! SpaceJam runtime hook for jamscan
+//! Spacejam runtime hook for jamscan
 
-use crate::models::{Block, Core, Epoch};
+use crate::{
+    Manager,
+    models::{Block, Core, Epoch},
+};
 use anyhow::Result;
 use runtime::storage::Commit;
 use score::{
     Block as JamBlock, EPOCH_LENGTH, OpaqueHash, ServiceId, TimeSlot, state::key,
     statistic::Statistics,
 };
-use sqlx::PgPool;
 use std::collections::BTreeMap;
 
-/// Spacejam runtime hook for jamscan
-pub struct JamScanHook(PgPool);
-
-impl JamScanHook {
-    /// Create a new JamScanHook
-    pub fn new(pool: PgPool) -> Self {
-        Self(pool)
-    }
-}
-
-impl runtime::Hook for JamScanHook {
+impl runtime::Hook for Manager {
     async fn on_finalized_block(&self, block: JamBlock) -> Result<()> {
-        Block::insert(&self.0, &block).await?;
+        Block::insert(&self.pg, &block).await?;
         Ok(())
     }
 
@@ -125,7 +117,7 @@ impl runtime::Hook for JamScanHook {
                 assurances += record.assurances;
             }
             let _ = Epoch::statistic(
-                &self.0,
+                &self.pg,
                 epoch,
                 blocks as i32,
                 tickets as i32,
@@ -138,7 +130,7 @@ impl runtime::Hook for JamScanHook {
 
             // update core statistics
             for (index, core) in statistics.cores.iter().enumerate() {
-                let _ = Core::statistic(&self.0, epoch, index as i32, core).await;
+                let _ = Core::statistic(&self.pg, epoch, index as i32, core).await;
             }
 
             // handle service data
