@@ -1,7 +1,7 @@
 //! Stores header data in postgres
 
 use async_graphql::{EmptyMutation, EmptySubscription};
-use clap::{CommandFactory, Parser};
+use clap::{ArgAction, CommandFactory, Parser};
 use jadex::{
     config::{Config, Cors, Graphql, Node},
     service,
@@ -34,7 +34,7 @@ struct Command {
     data_path: PathBuf,
 
     /// Verbosity level
-    #[arg(long, env = "VERBOSE", default_value = "0")]
+    #[arg(short, long, default_value = "0", action = ArgAction::Count)]
     verbose: u8,
 }
 

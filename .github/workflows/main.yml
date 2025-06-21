@@ -18,6 +18,10 @@ jobs:
       - uses: arduino/setup-protoc@v3
       - uses: dtolnay/rust-toolchain@stable
       - uses: taiki-e/install-action@sccache
+      - name: Setup Token
+        run: |
+          git config --global url."https://${{ secrets.GH_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://${{ secrets.GH_TOKEN }}:x-oauth-basic@github.com/".insteadOf "ssh://git@github.com/"
       - name: Run Build
         run: cargo build --release
 
