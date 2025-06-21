@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM validators WHERE epoch=$1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "epoch",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "vindex",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "blocks",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "tickets",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "preimages",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "guarantees",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "assurances",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "9d7da9189af05adc987f67bd2225894deb4dbdb3b5934aa3dedaf6841758039c"
+}

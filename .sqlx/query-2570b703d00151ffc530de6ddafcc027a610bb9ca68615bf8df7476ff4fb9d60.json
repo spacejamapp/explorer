@@ -1,67 +1,73 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM headers WHERE slot=$1",
+  "query": "SELECT * FROM epochs ORDER BY id DESC LIMIT $1 OFFSET $2",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "slot",
+        "name": "id",
         "type_info": "Int4"
       },
       {
         "ordinal": 1,
-        "name": "hash",
-        "type_info": "Varchar"
+        "name": "block",
+        "type_info": "Int4"
       },
       {
         "ordinal": 2,
-        "name": "parent",
+        "name": "entropy",
         "type_info": "Varchar"
       },
       {
         "ordinal": 3,
-        "name": "parent_state_root",
+        "name": "tickets_entropy",
         "type_info": "Varchar"
       },
       {
         "ordinal": 4,
-        "name": "extrinsic_hash",
-        "type_info": "Varchar"
+        "name": "validators",
+        "type_info": "VarcharArray"
       },
       {
         "ordinal": 5,
-        "name": "extrinsic_count",
-        "type_info": "Int4"
+        "name": "validators_bandersnatches",
+        "type_info": "VarcharArray"
       },
       {
         "ordinal": 6,
-        "name": "author_index",
+        "name": "blocks",
         "type_info": "Int4"
       },
       {
         "ordinal": 7,
-        "name": "entropy_source",
-        "type_info": "Varchar"
+        "name": "tickets",
+        "type_info": "Int4"
       },
       {
         "ordinal": 8,
-        "name": "seal",
-        "type_info": "Varchar"
+        "name": "preimages",
+        "type_info": "Int4"
       },
       {
         "ordinal": 9,
-        "name": "offenders_mark",
-        "type_info": "VarcharArray"
+        "name": "preimages_size",
+        "type_info": "Int4"
       },
       {
         "ordinal": 10,
-        "name": "current_epoch",
+        "name": "guarantees",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "assurances",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Int8",
+        "Int8"
       ]
     },
     "nullable": [
@@ -75,8 +81,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "bd82a6e4d74c28b42a331c8565493b4c27912b536276d5f33d63b6bfb7ed42ce"
+  "hash": "2570b703d00151ffc530de6ddafcc027a610bb9ca68615bf8df7476ff4fb9d60"
 }

@@ -1,14 +1,13 @@
+use crate::models::{
+    Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee, Header,
+    Preimage, Ticket, Validator,
+};
 use anyhow::Result;
 use async_graphql::SimpleObject;
-use score::block::Block as JamBlock;
+use score::{EPOCH_LENGTH, block::Block as JamBlock};
 use serde::{Deserialize, Serialize};
 use spacejson::Json;
 use sqlx::PgPool;
-
-use super::{
-    Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee, Header,
-    Preimage, SpaceJam, Ticket, Validator,
-};
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct BlockHeader {
@@ -17,7 +16,7 @@ pub struct BlockHeader {
     parent: String,
     parent_state_root: String,
     extrinsic_hash: String,
-    extrinsic_works: i32,
+    extrinsic_count: i32,
     author_index: i32,
     entropy_source: String,
     seal: String,
@@ -44,19 +43,32 @@ pub struct Dispute {
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Block {
-    slot: i32,
-    raw: String,
     header: BlockHeader,
     extrinsic: BlockExtrinsic,
 }
 
 impl Block {
-    // FIXME split field to functions for optimizing the graphql query
-    pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
-        let raw: String = query_scalar!("SELECT raw FROM blocks WHERE slot = $1", slot)
+    /// Count total blocks in the database
+    pub async fn count(pool: &PgPool) -> Result<i64> {
+        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM blocks")
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+        Ok(count)
+    }
+
+    /// Get the raw block data from the database.
+    pub async fn raw(pool: &PgPool, slot: i32) -> Result<String> {
+        let raw = query_scalar!("SELECT raw FROM blocks WHERE slot=$1", slot)
             .fetch_one(pool)
             .await?;
 
+        Ok(raw)
+    }
+
+    // FIXME split field to functions for optimizing the graphql query
+    #[allow(dead_code)]
+    pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
         // load header
         let header = Header::get(pool, slot).await?;
         let epoch = Epoch::get_by_block(pool, slot).await.ok();
@@ -67,7 +79,7 @@ impl Block {
             parent: header.parent,
             parent_state_root: header.parent_state_root,
             extrinsic_hash: header.extrinsic_hash,
-            extrinsic_works: header.extrinsic_works,
+            extrinsic_count: header.extrinsic_count,
             author_index: header.author_index,
             entropy_source: header.entropy_source,
             seal: header.seal,
@@ -98,8 +110,6 @@ impl Block {
         };
 
         Ok(Self {
-            slot,
-            raw,
             header: block_header,
             extrinsic,
         })
@@ -112,13 +122,6 @@ impl Block {
         query!("INSERT INTO blocks (slot,raw) VALUES ($1,$2)", slot, raw)
             .execute(pool)
             .await?;
-
-        // save epoch
-        let epoch_id = if let Some(epoch) = &block.header.epoch_mark {
-            Some(Epoch::insert(pool, slot, epoch).await?)
-        } else {
-            None
-        };
 
         // save tickets
         if let Some(tickets) = &block.header.tickets_mark {
@@ -140,11 +143,11 @@ impl Block {
         }
 
         // save guarantee
-        let mut extrinsic_works = 0i32;
+        let mut extrinsic_count = 0i32;
         let guarantees_num = block.extrinsic.guarantees.len() as i32;
         for guarantee in block.extrinsic.guarantees.iter() {
             let num = Guarantee::insert(pool, slot, guarantee).await?;
-            extrinsic_works += num;
+            extrinsic_count += num;
         }
 
         // save assurance
@@ -169,16 +172,14 @@ impl Block {
             DisputeFault::insert(pool, slot, fault).await?;
         }
 
-        // save stats
-        let current_epoch = SpaceJam::set_blocks(pool, slot, extrinsic_works, epoch_id).await?;
-
         // save header
-        Header::insert(pool, slot, extrinsic_works, current_epoch, &block.header).await?;
+        let epoch = slot / EPOCH_LENGTH as i32;
+        Header::insert(pool, slot, extrinsic_count, epoch, &block.header).await?;
 
         // save validators
         Validator::new_block(
             pool,
-            current_epoch,
+            epoch,
             block.header.author_index as i32,
             tickets_num,
             preimages_num,

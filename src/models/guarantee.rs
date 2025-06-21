@@ -15,6 +15,15 @@ pub struct Guarantee {
 }
 
 impl Guarantee {
+    /// Count total guarantees in the database
+    pub async fn count(pool: &PgPool) -> Result<i64> {
+        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM guarantees")
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+        Ok(count)
+    }
+
     pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
         let data = query_as!(Self, "SELECT * FROM guarantees WHERE block=$1", block)
             .fetch_all(pool)
@@ -24,11 +33,11 @@ impl Guarantee {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, guarantee: &ReportGuarantee) -> Result<i32> {
-        let package_hash = hex::encode(&guarantee.report.spec.hash);
+        let package_hash = hex::encode(guarantee.report.spec.hash);
         let signatures = guarantee
             .signatures
             .iter()
-            .map(|sig| format!("{}:{}", sig.validator_index, hex::encode(&sig.signature)))
+            .map(|sig| format!("{}:{}", sig.validator_index, hex::encode(sig.signature)))
             .collect::<Vec<String>>();
 
         // TODO save work report

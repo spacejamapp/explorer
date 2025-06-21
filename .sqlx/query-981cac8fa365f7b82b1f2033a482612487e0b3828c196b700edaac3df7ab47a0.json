@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT raw FROM blocks WHERE slot = $1",
+  "query": "SELECT raw FROM blocks WHERE slot=$1",
   "describe": {
     "columns": [
       {
@@ -18,5 +18,5 @@
       false
     ]
   },
-  "hash": "3d683f847f541a5c6b3292c7dc347ab6c0c0af3467822d0c32dd4bc4cafbbe5c"
+  "hash": "981cac8fa365f7b82b1f2033a482612487e0b3828c196b700edaac3df7ab47a0"
 }

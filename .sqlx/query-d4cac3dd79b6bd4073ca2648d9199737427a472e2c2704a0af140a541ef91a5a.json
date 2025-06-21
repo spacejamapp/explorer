@@ -1,0 +1,66 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM validators WHERE vindex=$1 ORDER BY id DESC LIMIT $2 OFFSET $3",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "epoch",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "vindex",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "blocks",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "tickets",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "preimages",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "guarantees",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "assurances",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "d4cac3dd79b6bd4073ca2648d9199737427a472e2c2704a0af140a541ef91a5a"
+}

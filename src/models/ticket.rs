@@ -13,6 +13,15 @@ pub struct Ticket {
 }
 
 impl Ticket {
+    /// Count total tickets in the database
+    pub async fn count(pool: &PgPool) -> Result<i64> {
+        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM tickets")
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+        Ok(count)
+    }
+
     pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
         let data = query_as!(Self, "SELECT * FROM tickets WHERE block=$1", block)
             .fetch_all(pool)

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM epoches ORDER BY id DESC LIMIT $1 OFFSET $2",
+  "query": "SELECT * from epochs WHERE id = $1",
   "describe": {
     "columns": [
       {
@@ -32,12 +32,41 @@
         "ordinal": 5,
         "name": "validators_bandersnatches",
         "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 6,
+        "name": "blocks",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "tickets",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "preimages",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "preimages_size",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 10,
+        "name": "guarantees",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "assurances",
+        "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Int8",
-        "Int8"
+        "Int4"
       ]
     },
     "nullable": [
@@ -46,8 +75,14 @@
       false,
       false,
       false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
       false
     ]
   },
-  "hash": "8bf6e21d5fe29051313abae0bca470ee6c89606fe9ef389378a0e9cff5e61e39"
+  "hash": "5c8351f11ac2f11a255491f5e8d4132249e8fafcf7b1ce29e065351720328ca9"
 }

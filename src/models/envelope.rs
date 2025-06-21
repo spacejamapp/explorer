@@ -23,7 +23,7 @@ impl Envelope {
 
     pub async fn insert(pool: &PgPool, block: i32, envelope: &TicketEnvelope) -> Result<()> {
         let attempt = envelope.attempt as i16;
-        let signature = hex::encode(&envelope.signature);
+        let signature = hex::encode(envelope.signature);
 
         query!(
             "INSERT INTO envelopes (block,attempt,signature) VALUES ($1,$2,$3)",

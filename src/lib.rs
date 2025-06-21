@@ -3,8 +3,8 @@
 #[macro_use]
 extern crate sqlx;
 
-pub use hook::JamScanHook;
+pub use manager::Manager;
 
-mod hook;
+mod manager;
 mod models;
 pub mod schema;

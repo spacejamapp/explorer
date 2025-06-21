@@ -11,7 +11,7 @@ pub struct Header {
     pub parent: String,
     pub parent_state_root: String,
     pub extrinsic_hash: String,
-    pub extrinsic_works: i32,
+    pub extrinsic_count: i32,
     pub author_index: i32,
     pub entropy_source: String,
     pub seal: String,
@@ -38,6 +38,7 @@ impl Header {
         Ok(data)
     }
 
+    /// NOTE: this will not being used, consider remove it.
     pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
         let data = query_as!(Self, "SELECT * FROM headers WHERE slot=$1", slot)
             .fetch_one(pool)
@@ -49,7 +50,7 @@ impl Header {
     pub async fn insert(
         pool: &PgPool,
         slot: i32,
-        extrinsic_works: i32,
+        extrinsic_count: i32,
         current_epoch: i32,
         header: &JamHeader,
     ) -> Result<()> {
@@ -59,26 +60,26 @@ impl Header {
         let parent_state_root = hex::encode(header.parent_state_root);
         let extrinsic_hash = hex::encode(header.extrinsic_hash);
         let author_index = header.author_index;
-        let entroy_source = hex::encode(header.entropy_source);
+        let entropy_source = hex::encode(header.entropy_source);
         let seal = hex::encode(header.seal);
 
         // FIXME if need save the offenders for validators?
         let offenders_mark = header
             .offenders_mark
             .iter()
-            .map(|v| hex::encode(v))
+            .map(hex::encode)
             .collect::<Vec<String>>();
 
         query!(
-            "INSERT INTO headers (slot,hash,parent,parent_state_root,extrinsic_hash,extrinsic_works,author_index,entropy_source,seal,offenders_mark,current_epoch) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+            "INSERT INTO headers (slot,hash,parent,parent_state_root,extrinsic_hash,extrinsic_count,author_index,entropy_source,seal,offenders_mark,current_epoch) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
                 slot,
                 block_hash,
                 parent,
                 parent_state_root,
                 extrinsic_hash,
-                extrinsic_works,
+                extrinsic_count,
                 author_index as i32,
-                entroy_source,
+                entropy_source,
                 seal,
                 &offenders_mark,
                 current_epoch,

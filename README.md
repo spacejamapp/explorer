@@ -1,6 +1,6 @@
 > [!NOTE]
 >
-> Make thinkgs work first, optimization doesn't matter atm.
+> Make things work first, optimization doesn't matter atm.
 
 # The backend of Jamscan
 
