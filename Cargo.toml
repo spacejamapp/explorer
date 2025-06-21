@@ -18,11 +18,9 @@ tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
 
 # spacejam dependencies
-#
-# NOTE: @git is buggy for github CI as well
-jamcodec = { git = "https://github.com/spacejamapp/spacejam", branch = "jamscan" }
-runtime = { git = "https://github.com/spacejamapp/spacejam", package = "spacejam-runtime", branch = "jamscan" }
-score = { git = "https://github.com/spacejamapp/spacejam", package = "spacejam-core", branch = "jamscan" }
-spacejam-crypto = { git = "https://github.com/spacejamapp/spacejam", branch = "jamscan" }
-spacejson = { git = "https://github.com/spacejamapp/spacejam", branch = "jamscan" }
-jadex = { git = "https://github.com/spacejamapp/spacejam", branch = "jamscan" }
+jamcodec = { git = "ssh://git@github.com/spacejamapp/spacejam.git", branch = "jadex" }
+runtime = { git = "ssh://git@github.com/spacejamapp/spacejam.git", package = "spacejam-runtime", branch = "jadex" }
+score = { git = "ssh://git@github.com/spacejamapp/spacejam.git", package = "spacejam-core", branch = "jadex" }
+spacejam-crypto = { git = "ssh://git@github.com/spacejamapp/spacejam.git", branch = "jadex" }
+spacejson = { git = "ssh://git@github.com/spacejamapp/spacejam.git", branch = "jadex" }
+jadex = { git = "ssh://git@github.com/spacejamapp/spacejam.git", branch = "jadex" }
