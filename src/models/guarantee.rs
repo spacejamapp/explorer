@@ -28,7 +28,7 @@ impl Guarantee {
         let signatures = guarantee
             .signatures
             .iter()
-            .map(|sig| format!("{}:{}", sig.validator_index, hex::encode(&sig.signature)))
+            .map(|sig| format!("{}:{}", sig.validator_index, hex::encode(sig.signature)))
             .collect::<Vec<String>>();
 
         // TODO save work report

@@ -24,10 +24,10 @@ impl Assurance {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, assurance: &AvailAssurance) -> Result<()> {
-        let anchor = hex::encode(&assurance.anchor);
-        let bitfield = hex::encode(&assurance.bitfield);
+        let anchor = hex::encode(assurance.anchor);
+        let bitfield = hex::encode(assurance.bitfield);
         let validator_index = assurance.validator_index as i32;
-        let signature = hex::encode(&assurance.signature);
+        let signature = hex::encode(assurance.signature);
 
         query!(
             "INSERT INTO assurances (block,anchor,bitfield,validator_index,signature) VALUES ($1,$2,$3,$4,$5)",

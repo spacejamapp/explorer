@@ -62,9 +62,10 @@ impl Epoch {
         }
 
         let epoch_id = block / EPOCH_LENGTH as i32 + 1;
-        if let Ok(_) = query_as!(Self, "SELECT * from epoches WHERE id = $1", epoch_id)
+        if query_as!(Self, "SELECT * from epoches WHERE id = $1", epoch_id)
             .fetch_one(pool)
             .await
+            .is_ok()
         {
             // update epoch TODO check epoch is valid
             query!(
@@ -92,6 +93,7 @@ impl Epoch {
         Ok(epoch_id)
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn statistic(
         pool: &PgPool,
         id: i32,
