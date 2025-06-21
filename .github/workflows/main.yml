@@ -20,8 +20,8 @@ jobs:
       - uses: taiki-e/install-action@sccache
       - name: Setup Token
         run: |
-          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
-          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global credential.helper store
+          echo "https://x-access-token:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
       - name: Run Build
         run: cargo build --release
 
@@ -35,8 +35,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Setup Token
         run: |
-          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
-          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global credential.helper store
+          echo "https://x-access-token:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
       - name: Format
         run: cargo fmt --check
       - name: Clippy
