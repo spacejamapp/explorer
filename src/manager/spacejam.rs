@@ -8,7 +8,9 @@ use async_graphql::{ComplexObject, SimpleObject};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+/// Spacejam global state
 #[derive(SimpleObject, Deserialize, Serialize, Clone)]
+#[graphql(complex)]
 pub struct Spacejam {
     /// The total number of tickets
     pub tickets: i64,
@@ -33,12 +35,15 @@ pub struct Spacejam {
 
     /// The total number of blocks
     pub blocks: i64,
+
+    /// The slot of the last finalized block
+    pub finalized: u32,
 }
 
 #[ComplexObject]
 impl Spacejam {
     /// The total number of extrinsics
-    async fn extrinsics(&self) -> i64 {
+    pub async fn extrinsics(&self) -> i64 {
         self.tickets
             + self.preimages
             + self.guarantees
@@ -70,6 +75,7 @@ impl Spacejam {
             disputes_culprits,
             disputes_faults,
             blocks,
+            finalized: 0,
         })
     }
 }

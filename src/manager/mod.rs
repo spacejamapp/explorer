@@ -53,6 +53,7 @@ impl Manager {
         spacejam.disputes_culprits += block.extrinsic.disputes.culprits.len() as i64;
         spacejam.disputes_faults += block.extrinsic.disputes.faults.len() as i64;
         spacejam.blocks += 1;
+        spacejam.finalized = block.header.slot;
         Ok(())
     }
 }
