@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "UPDATE epoches SET blocks=$1,tickets=$2,preimages=$3,preimages_size=$4,guarantees=$5,assurances=$6 WHERE id = $7",
+  "query": "UPDATE epochs SET blocks=$1,tickets=$2,preimages=$3,preimages_size=$4,guarantees=$5,assurances=$6 WHERE id = $7",
   "describe": {
     "columns": [],
     "parameters": {
@@ -16,5 +16,5 @@
     },
     "nullable": []
   },
-  "hash": "08cbb95fbe38bc028c9b539ffaee6bc3b93ae2be32c9e9ff3b7746a0e041b763"
+  "hash": "bc14ef606ec64c4a47c4fce9130416d67382a88d111094ff2c7a012a74ff475e"
 }

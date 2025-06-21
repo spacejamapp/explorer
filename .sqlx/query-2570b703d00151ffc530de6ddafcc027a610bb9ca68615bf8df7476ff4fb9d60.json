@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM epoches ORDER BY id DESC LIMIT $1 OFFSET $2",
+  "query": "SELECT * FROM epochs ORDER BY id DESC LIMIT $1 OFFSET $2",
   "describe": {
     "columns": [
       {
@@ -85,5 +85,5 @@
       false
     ]
   },
-  "hash": "8bf6e21d5fe29051313abae0bca470ee6c89606fe9ef389378a0e9cff5e61e39"
+  "hash": "2570b703d00151ffc530de6ddafcc027a610bb9ca68615bf8df7476ff4fb9d60"
 }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM epoches WHERE block = $1",
+  "query": "SELECT * from epochs WHERE id = $1",
   "describe": {
     "columns": [
       {
@@ -84,5 +84,5 @@
       false
     ]
   },
-  "hash": "49214220d8425202a4422ed1e1e80c0f8748ffa037b1ad9a7a3023db6b521db3"
+  "hash": "5c8351f11ac2f11a255491f5e8d4132249e8fafcf7b1ce29e065351720328ca9"
 }
