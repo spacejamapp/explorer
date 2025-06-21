@@ -15,14 +15,11 @@ use std::collections::BTreeMap;
 impl runtime::Hook for Manager {
     async fn on_finalized_block(&self, block: JamBlock) -> Result<()> {
         Block::insert(&self.pg, &block).await?;
+        self.on_finalized_block(&block).await?;
         Ok(())
     }
 
-    async fn on_diff(
-        &self,
-        hash: OpaqueHash,
-        diff: Commit<[u8; 31], Vec<u8>>,
-    ) -> Result<()> {
+    async fn on_diff(&self, hash: OpaqueHash, diff: Commit<[u8; 31], Vec<u8>>) -> Result<()> {
         let mut epoch = 0i32;
         let mut statistics = Statistics::default();
         let mut data = BTreeMap::new();

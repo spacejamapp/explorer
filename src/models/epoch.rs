@@ -50,6 +50,8 @@ impl Epoch {
         Ok(data)
     }
 
+    /// FIXME: should accumulate the extrinsic count
+    #[allow(dead_code)]
     pub async fn insert(pool: &PgPool, block: i32, epoch: &EpochMark) -> Result<i32> {
         let entropy = hex::encode(epoch.entropy);
         let tickets_entropy = hex::encode(epoch.tickets_entropy);

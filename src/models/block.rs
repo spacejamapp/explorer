@@ -1,10 +1,10 @@
 use crate::models::{
     Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee, Header,
-    Preimage, SpaceJam, Ticket, Validator,
+    Preimage, Ticket, Validator,
 };
 use anyhow::Result;
 use async_graphql::SimpleObject;
-use score::block::Block as JamBlock;
+use score::{EPOCH_LENGTH, block::Block as JamBlock};
 use serde::{Deserialize, Serialize};
 use spacejson::Json;
 use sqlx::PgPool;
@@ -48,6 +48,15 @@ pub struct Block {
 }
 
 impl Block {
+    /// Count total blocks in the database
+    pub async fn count(pool: &PgPool) -> Result<i64> {
+        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM blocks")
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+        Ok(count)
+    }
+
     /// Get the raw block data from the database.
     pub async fn raw(pool: &PgPool, slot: i32) -> Result<String> {
         let raw = query_scalar!("SELECT raw FROM blocks WHERE slot=$1", slot)
@@ -114,13 +123,6 @@ impl Block {
             .execute(pool)
             .await?;
 
-        // save epoch
-        let epoch_id = if let Some(epoch) = &block.header.epoch_mark {
-            Some(Epoch::insert(pool, slot, epoch).await?)
-        } else {
-            None
-        };
-
         // save tickets
         if let Some(tickets) = &block.header.tickets_mark {
             for ticket in tickets {
@@ -170,16 +172,14 @@ impl Block {
             DisputeFault::insert(pool, slot, fault).await?;
         }
 
-        // save stats
-        let current_epoch = SpaceJam::set_blocks(pool, slot, extrinsic_count, epoch_id).await?;
-
         // save header
-        Header::insert(pool, slot, extrinsic_count, current_epoch, &block.header).await?;
+        let epoch = slot / EPOCH_LENGTH as i32;
+        Header::insert(pool, slot, extrinsic_count, epoch, &block.header).await?;
 
         // save validators
         Validator::new_block(
             pool,
-            current_epoch,
+            epoch,
             block.header.author_index as i32,
             tickets_num,
             preimages_num,

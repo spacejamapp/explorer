@@ -1,3 +1,5 @@
+//! TODO: introduce a single type with enum for all dispute related types
+
 use anyhow::Result;
 use async_graphql::SimpleObject;
 use score::extrinsic::{Culprit, Fault, Verdict};
@@ -34,6 +36,15 @@ pub struct DisputeFault {
 }
 
 impl DisputeVerdict {
+    /// Count total verdicts in the database
+    pub async fn count(pool: &PgPool) -> Result<i64> {
+        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM dispute_verdicts")
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+        Ok(count)
+    }
+
     pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
         let data = query_as!(Self, "SELECT * FROM dispute_verdicts WHERE block=$1", block)
             .fetch_all(pool)
@@ -66,6 +77,15 @@ impl DisputeVerdict {
 }
 
 impl DisputeCulprit {
+    /// Count total culprits in the database
+    pub async fn count(pool: &PgPool) -> Result<i64> {
+        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM dispute_culprits")
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+        Ok(count)
+    }
+
     pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
         let data = query_as!(Self, "SELECT * FROM dispute_culprits WHERE block=$1", block)
             .fetch_all(pool)
@@ -94,6 +114,15 @@ impl DisputeCulprit {
 }
 
 impl DisputeFault {
+    /// Count total faults in the database
+    pub async fn count(pool: &PgPool) -> Result<i64> {
+        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM dispute_faults")
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+        Ok(count)
+    }
+
     pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
         let data = query_as!(Self, "SELECT * FROM dispute_faults WHERE block=$1", block)
             .fetch_all(pool)
