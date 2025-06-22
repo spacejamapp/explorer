@@ -12,6 +12,7 @@ mod epoch;
 mod guarantee;
 mod header;
 mod preimage;
+mod service;
 mod ticket;
 mod validator;
 
@@ -24,5 +25,6 @@ pub use epoch::Epoch;
 pub use guarantee::Guarantee;
 pub use header::Header;
 pub use preimage::Preimage;
+pub use service::Service;
 pub use ticket::Ticket;
 pub use validator::Validator;

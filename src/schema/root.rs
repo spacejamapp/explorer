@@ -3,7 +3,7 @@
 use crate::{
     Manager,
     manager::Spacejam,
-    models::{Block, Core, Epoch, Header, Validator},
+    models::{Block, Core, Epoch, Header, Service, Validator},
 };
 use async_graphql::{Context, Object, Result};
 
@@ -66,5 +66,20 @@ impl QueryRoot {
     /// Get the spacejam cache
     async fn spacejam(&self, ctx: &Context<'_>) -> Result<Spacejam> {
         Ok(ctx.data::<Manager>()?.spacejam.read().await.clone())
+    }
+
+    /// Get the service by id
+    async fn service(&self, ctx: &Context<'_>, id: i32) -> Result<Service> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let service = Service::get(pool, id).await?;
+        // TODO add preimage & work reports
+        Ok(service)
+    }
+
+    /// Get the services list
+    async fn services(&self, ctx: &Context<'_>, from: i64, to: i64) -> Result<Vec<Service>> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let services = Service::list(pool, from, to).await?;
+        Ok(services)
     }
 }

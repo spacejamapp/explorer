@@ -2,13 +2,13 @@
 
 use crate::{
     Manager,
-    models::{Block, Core, Epoch},
+    models::{Block, Core, Epoch, Service},
 };
 use anyhow::Result;
 use runtime::storage::Commit;
 use score::{
-    Block as JamBlock, EPOCH_LENGTH, OpaqueHash, ServiceId, TimeSlot, state::key,
-    statistic::Statistics,
+    Block as JamBlock, EPOCH_LENGTH, OpaqueHash, ServiceId, TimeSlot, service::ServiceData,
+    state::key, statistic::Statistics,
 };
 use std::collections::BTreeMap;
 
@@ -130,8 +130,15 @@ impl runtime::Hook for Manager {
         }
 
         // handle service data
+        for (sid, sdata) in data {
+            if let Ok(service_data) = jamcodec::decode::<ServiceData>(sdata) {
+                let _ = Service::insert(&self.pg, sid, &service_data).await;
+            }
+        }
+
+        // TODO handle service preimage
+
         // handle service value
-        // handle service preimage
         // handle service request
 
         Ok(())

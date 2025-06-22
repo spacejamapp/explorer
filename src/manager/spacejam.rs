@@ -1,7 +1,8 @@
 //! The spacejam cache in memory
 
 use crate::models::{
-    Assurance, Block, DisputeCulprit, DisputeFault, DisputeVerdict, Guarantee, Preimage, Ticket,
+    Assurance, Block, DisputeCulprit, DisputeFault, DisputeVerdict, Guarantee, Preimage, Service,
+    Ticket,
 };
 use anyhow::Result;
 use async_graphql::{ComplexObject, SimpleObject};
@@ -38,6 +39,9 @@ pub struct Spacejam {
 
     /// The slot of the last finalized block
     pub finalized: u32,
+
+    /// The total number of services
+    pub services: i64,
 }
 
 #[ComplexObject]
@@ -65,6 +69,7 @@ impl Spacejam {
         let disputes_culprits = DisputeCulprit::count(pg).await?;
         let disputes_faults = DisputeFault::count(pg).await?;
         let blocks = Block::count(pg).await?;
+        let services = Service::count(pg).await?;
 
         Ok(Spacejam {
             tickets,
@@ -75,6 +80,7 @@ impl Spacejam {
             disputes_culprits,
             disputes_faults,
             blocks,
+            services,
             finalized: 0,
         })
     }
