@@ -15,6 +15,7 @@ mod preimage;
 mod service;
 mod ticket;
 mod validator;
+mod work_result;
 
 pub use assurance::Assurance;
 pub use block::Block;
@@ -28,3 +29,4 @@ pub use preimage::Preimage;
 pub use service::Service;
 pub use ticket::Ticket;
 pub use validator::Validator;
+pub use work_result::WorkResult;
