@@ -15,18 +15,38 @@
       },
       {
         "ordinal": 2,
-        "name": "report",
-        "type_info": "Varchar"
-      },
-      {
-        "ordinal": 3,
         "name": "slot",
         "type_info": "Int4"
       },
       {
-        "ordinal": 4,
+        "ordinal": 3,
         "name": "signatures",
         "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 4,
+        "name": "spec",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "core",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "authorizer_hash",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "auth_output",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "auth_gas",
+        "type_info": "Int8"
       }
     ],
     "parameters": {
@@ -35,6 +55,10 @@
       ]
     },
     "nullable": [
+      false,
+      false,
+      false,
+      false,
       false,
       false,
       false,

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM epochs WHERE block = $1",
+  "query": "SELECT * FROM work_results WHERE service=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
   "describe": {
     "columns": [
       {
@@ -10,63 +10,65 @@
       },
       {
         "ordinal": 1,
-        "name": "block",
+        "name": "guarantee",
         "type_info": "Int4"
       },
       {
         "ordinal": 2,
-        "name": "entropy",
-        "type_info": "Varchar"
+        "name": "service",
+        "type_info": "Int4"
       },
       {
         "ordinal": 3,
-        "name": "tickets_entropy",
+        "name": "code",
         "type_info": "Varchar"
       },
       {
         "ordinal": 4,
-        "name": "validators_ed25519",
-        "type_info": "VarcharArray"
+        "name": "payload",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 5,
-        "name": "validators_bandersnatches",
-        "type_info": "VarcharArray"
+        "name": "gas",
+        "type_info": "Int8"
       },
       {
         "ordinal": 6,
-        "name": "blocks",
-        "type_info": "Int4"
+        "name": "result",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 7,
-        "name": "tickets",
-        "type_info": "Int4"
+        "name": "refine_gas",
+        "type_info": "Int8"
       },
       {
         "ordinal": 8,
-        "name": "preimages",
+        "name": "refine_imports",
         "type_info": "Int4"
       },
       {
         "ordinal": 9,
-        "name": "preimages_size",
+        "name": "refine_extrinsic_count",
         "type_info": "Int4"
       },
       {
         "ordinal": 10,
-        "name": "guarantees",
+        "name": "refine_extrinsic_size",
         "type_info": "Int4"
       },
       {
         "ordinal": 11,
-        "name": "assurances",
+        "name": "refine_exports",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Int4",
+        "Int4",
+        "Int8"
       ]
     },
     "nullable": [
@@ -84,5 +86,5 @@
       false
     ]
   },
-  "hash": "ed84770d2ed8b8600593a18e7a8d56973dd8c7cbd2c7848f310e20c94ed6aed1"
+  "hash": "4863f630605ac8f792f55dbf50da271f32c039cd7b2acfaa8de6dae69cbc2456"
 }
