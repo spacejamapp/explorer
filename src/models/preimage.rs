@@ -7,7 +7,7 @@ use sqlx::PgPool;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Preimage {
-    id: i32,
+    pub id: i32,
     block: i32,
     requester: i32,
     hash: String,
@@ -32,10 +32,21 @@ impl Preimage {
         Ok(data)
     }
 
-    pub async fn list_by_service(pool: &PgPool, service: i32) -> Result<Vec<Self>> {
-        let data = query_as!(Self, "SELECT * FROM preimages WHERE requester=$1", service)
-            .fetch_all(pool)
-            .await?;
+    pub async fn list_by_service(
+        pool: &PgPool,
+        service: i32,
+        limit: i32,
+        cursor: i32,
+    ) -> Result<Vec<Self>> {
+        let data = query_as!(
+            Self,
+            "SELECT * FROM preimages WHERE requester=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+            service,
+            cursor,
+            limit as i64 + 1
+        )
+        .fetch_all(pool)
+        .await?;
 
         Ok(data)
     }

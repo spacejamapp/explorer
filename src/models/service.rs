@@ -1,5 +1,8 @@
-use anyhow::{Result, anyhow};
-use async_graphql::{ComplexObject, Context, Result as GraphqlResult, SimpleObject};
+use anyhow::Result;
+use async_graphql::{
+    ComplexObject, Context, Result as GraphqlResult, SimpleObject,
+    connection::{Connection, Edge, EmptyFields},
+};
 use score::{ServiceId, service::ServiceData};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
@@ -13,7 +16,7 @@ use crate::{
 #[graphql(complex)]
 pub struct Service {
     /// The key of the service
-    id: i32,
+    pub id: i32,
     /// The code hash of the service account (c)
     code: String,
     /// The balance of the service account (b)
@@ -30,16 +33,46 @@ pub struct Service {
 
 #[ComplexObject]
 impl Service {
-    async fn preimages(&self, ctx: &Context<'_>) -> GraphqlResult<Vec<Preimage>> {
+    async fn preimages(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
+        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
+    ) -> GraphqlResult<Connection<String, Preimage, EmptyFields, EmptyFields>> {
+        let limit = first.unwrap_or(10).min(100);
+        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
-        let preimages = Preimage::list_by_service(pool, self.id).await?;
-        Ok(preimages)
+        let data = Preimage::list_by_service(pool, self.id, limit, cursor).await?;
+        let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
+
+        let has_next_page = items.len() > limit as usize;
+        let mut connection = Connection::new(false, has_next_page);
+        connection.edges = items
+            .into_iter()
+            .map(|item| Edge::new(item.id.to_string(), item))
+            .collect();
+        Ok(connection)
     }
 
-    async fn works(&self, ctx: &Context<'_>) -> GraphqlResult<Vec<WorkResult>> {
+    async fn works(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
+        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
+    ) -> GraphqlResult<Connection<String, WorkResult, EmptyFields, EmptyFields>> {
+        let limit = first.unwrap_or(10).min(100);
+        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
-        let works = WorkResult::list_by_service(pool, self.id, 1, 100).await?;
-        Ok(works)
+        let data = WorkResult::list_by_service(pool, self.id, limit, cursor).await?;
+        let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
+
+        let has_next_page = items.len() > limit as usize;
+        let mut connection = Connection::new(false, has_next_page);
+        connection.edges = items
+            .into_iter()
+            .map(|item| Edge::new(item.id.to_string(), item))
+            .collect();
+        Ok(connection)
     }
 }
 
@@ -53,17 +86,12 @@ impl Service {
         Ok(count)
     }
 
-    pub async fn list(pool: &PgPool, from: i64, to: i64) -> Result<Vec<Self>> {
-        if to < from || to - from > 100 {
-            return Err(anyhow!("No more than 100 rows in a single query"));
-        }
-        let offset = if from < 0 { 1 } else { from - 1 };
-
+    pub async fn list(pool: &PgPool, limit: i32, cursor: i32) -> Result<Vec<Self>> {
         let data = query_as!(
             Self,
-            "SELECT * FROM services ORDER BY id DESC LIMIT $1 OFFSET $2",
-            to - from,
-            offset
+            "SELECT * FROM services WHERE id>$1 ORDER BY id DESC LIMIT $2",
+            cursor,
+            limit as i64 + 1
         )
         .fetch_all(pool)
         .await?;

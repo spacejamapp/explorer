@@ -1,4 +1,4 @@
-use anyhow::{Result, anyhow};
+use anyhow::Result;
 use async_graphql::SimpleObject;
 use score::service::{WorkExecResult, WorkResult as JamWorkResult};
 use serde::{Deserialize, Serialize};
@@ -7,7 +7,7 @@ use sqlx::PgPool;
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct WorkResult {
     /// The key of the service
-    id: i32,
+    pub id: i32,
     /// guarantee(work report) id
     guarantee: i32,
     /// The service id
@@ -36,20 +36,15 @@ impl WorkResult {
     pub async fn list_by_service(
         pool: &PgPool,
         service: i32,
-        from: i64,
-        to: i64,
+        limit: i32,
+        cursor: i32,
     ) -> Result<Vec<Self>> {
-        if to < from || to - from > 100 {
-            return Err(anyhow!("No more than 100 rows in a single query"));
-        }
-        let offset = if from < 0 { 1 } else { from - 1 };
-
         let data = query_as!(
             Self,
-            "SELECT * FROM work_results WHERE service = $1 ORDER BY id DESC LIMIT $2 OFFSET $3",
+            "SELECT * FROM work_results WHERE service=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
             service,
-            to - from,
-            offset
+            cursor,
+            limit as i64 + 1
         )
         .fetch_all(pool)
         .await?;

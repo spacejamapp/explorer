@@ -1,9 +1,12 @@
-use crate::models::{
-    Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee, Header,
-    Preimage, Ticket, Validator,
+use crate::{
+    Manager,
+    models::{
+        Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee,
+        Header, Preimage, Ticket, Validator,
+    },
 };
 use anyhow::Result;
-use async_graphql::SimpleObject;
+use async_graphql::{Context, Object, Result as GraphqlResult, SimpleObject};
 use score::{EPOCH_LENGTH, block::Block as JamBlock};
 use serde::{Deserialize, Serialize};
 use spacejson::Json;
@@ -41,34 +44,17 @@ pub struct Dispute {
     faults: Vec<DisputeFault>,
 }
 
-#[derive(SimpleObject, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Block {
-    header: BlockHeader,
-    extrinsic: BlockExtrinsic,
+    pub slot: i32,
 }
 
+#[Object]
 impl Block {
-    /// Count total blocks in the database
-    pub async fn count(pool: &PgPool) -> Result<i64> {
-        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM blocks")
-            .fetch_one(pool)
-            .await?
-            .unwrap_or(0);
-        Ok(count)
-    }
+    async fn header(&self, ctx: &Context<'_>) -> GraphqlResult<BlockHeader> {
+        let slot = self.slot;
+        let pool = &ctx.data::<Manager>()?.pg;
 
-    /// Get the raw block data from the database.
-    pub async fn raw(pool: &PgPool, slot: i32) -> Result<String> {
-        let raw = query_scalar!("SELECT raw FROM blocks WHERE slot=$1", slot)
-            .fetch_one(pool)
-            .await?;
-
-        Ok(raw)
-    }
-
-    // FIXME split field to functions for optimizing the graphql query
-    #[allow(dead_code)]
-    pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
         // load header
         let header = Header::get(pool, slot).await?;
         let epoch = Epoch::get_by_block(pool, slot).await.ok();
@@ -87,6 +73,13 @@ impl Block {
             epoch_mark: epoch,
             tickets_mark: tickets,
         };
+
+        Ok(block_header)
+    }
+
+    async fn extrinsic(&self, ctx: &Context<'_>) -> GraphqlResult<BlockExtrinsic> {
+        let slot = self.slot;
+        let pool = &ctx.data::<Manager>()?.pg;
 
         // load extrinsic
         let envelopes = Envelope::list_by_block(pool, slot).await?;
@@ -109,10 +102,27 @@ impl Block {
             disputes,
         };
 
-        Ok(Self {
-            header: block_header,
-            extrinsic,
-        })
+        Ok(extrinsic)
+    }
+}
+
+impl Block {
+    /// Count total blocks in the database
+    pub async fn count(pool: &PgPool) -> Result<i64> {
+        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM blocks")
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+        Ok(count)
+    }
+
+    /// Get the raw block data from the database.
+    pub async fn raw(pool: &PgPool, slot: i32) -> Result<String> {
+        let raw = query_scalar!("SELECT raw FROM blocks WHERE slot=$1", slot)
+            .fetch_one(pool)
+            .await?;
+
+        Ok(raw)
     }
 
     pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<()> {
