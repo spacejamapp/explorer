@@ -20,11 +20,13 @@ pub struct Header {
 }
 
 impl Header {
+    /// List all headers (DESC)
     pub async fn list(pool: &PgPool, limit: i32, cursor: i32) -> Result<Vec<Self>> {
+        let fixed_cursor = if cursor == 0 { i32::MAX } else { cursor };
         let data = query_as!(
             Self,
-            "SELECT * FROM headers WHERE slot > $1 ORDER BY slot DESC LIMIT $2",
-            cursor,
+            "SELECT * FROM headers WHERE slot < $1 ORDER BY slot DESC LIMIT $2",
+            fixed_cursor,
             limit as i64 + 1
         )
         .fetch_all(pool)

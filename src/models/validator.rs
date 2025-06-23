@@ -16,7 +16,7 @@ pub struct Validator {
 }
 
 impl Validator {
-    /// List all validators in the epoch
+    /// List all validators in the epoch (ASC)
     pub async fn list_by_epoch(
         pool: &PgPool,
         epoch: i32,
@@ -25,7 +25,7 @@ impl Validator {
     ) -> Result<Vec<Self>> {
         let data = query_as!(
             Self,
-            "SELECT * FROM validators WHERE epoch=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+            "SELECT * FROM validators WHERE epoch=$1 AND id>$2 ORDER BY id ASC LIMIT $3",
             epoch,
             cursor,
             limit as i64 + 1
@@ -36,18 +36,19 @@ impl Validator {
         Ok(data)
     }
 
-    /// list all validator's epoch statistics
+    /// list all validator's epoch statistics (DESC)
     pub async fn list_by_index(
         pool: &PgPool,
         index: i32,
         limit: i32,
         cursor: i32,
     ) -> Result<Vec<Self>> {
+        let fixed_cursor = if cursor == 0 { i32::MAX } else { cursor };
         let data = query_as!(
             Self,
-            "SELECT * FROM validators WHERE vindex=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+            "SELECT * FROM validators WHERE vindex=$1 AND id<$2 ORDER BY id DESC LIMIT $3",
             index,
-            cursor,
+            fixed_cursor,
             limit as i64 + 1
         )
         .fetch_all(pool)
