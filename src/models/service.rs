@@ -1,10 +1,16 @@
 use anyhow::{Result, anyhow};
-use async_graphql::SimpleObject;
+use async_graphql::{ComplexObject, Context, Result as GraphqlResult, SimpleObject};
 use score::{ServiceId, service::ServiceData};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+use crate::{
+    Manager,
+    models::{Preimage, WorkResult},
+};
+
 #[derive(SimpleObject, Serialize, Deserialize)]
+#[graphql(complex)]
 pub struct Service {
     /// The key of the service
     id: i32,
@@ -20,6 +26,21 @@ pub struct Service {
     total: i64,
     /// The number of items in storage (i)
     items: i32,
+}
+
+#[ComplexObject]
+impl Service {
+    async fn preimages(&self, ctx: &Context<'_>) -> GraphqlResult<Vec<Preimage>> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let preimages = Preimage::list_by_service(pool, self.id).await?;
+        Ok(preimages)
+    }
+
+    async fn works(&self, ctx: &Context<'_>) -> GraphqlResult<Vec<WorkResult>> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let works = WorkResult::list_by_service(pool, self.id, 1, 100).await?;
+        Ok(works)
+    }
 }
 
 impl Service {

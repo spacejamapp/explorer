@@ -32,6 +32,14 @@ impl Preimage {
         Ok(data)
     }
 
+    pub async fn list_by_service(pool: &PgPool, service: i32) -> Result<Vec<Self>> {
+        let data = query_as!(Self, "SELECT * FROM preimages WHERE requester=$1", service)
+            .fetch_all(pool)
+            .await?;
+
+        Ok(data)
+    }
+
     pub async fn insert(pool: &PgPool, block: i32, preimage: &JamPreimage) -> Result<()> {
         let image_hash = hex::encode(blake2b(&preimage.blob));
 

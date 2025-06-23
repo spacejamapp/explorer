@@ -33,7 +33,7 @@ pub struct WorkResult {
 }
 
 impl WorkResult {
-    pub async fn _list_by_service(
+    pub async fn list_by_service(
         pool: &PgPool,
         service: i32,
         from: i64,

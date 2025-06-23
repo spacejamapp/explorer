@@ -136,11 +136,6 @@ impl runtime::Hook for Manager {
             }
         }
 
-        // TODO add service id to preimage
-
-        // handle service value
-        // handle service request
-
         Ok(())
     }
 }
