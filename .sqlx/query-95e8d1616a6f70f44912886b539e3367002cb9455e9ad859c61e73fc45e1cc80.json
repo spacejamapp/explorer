@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "UPDATE epochs SET block=$1,entropy=$2,tickets_entropy=$3,validators=$4,validators_bandersnatches=$5 WHERE id = $6",
+  "query": "UPDATE epochs SET block=$1,entropy=$2,tickets_entropy=$3,validators_ed25519=$4,validators_bandersnatches=$5 WHERE id = $6",
   "describe": {
     "columns": [],
     "parameters": {
@@ -15,5 +15,5 @@
     },
     "nullable": []
   },
-  "hash": "fb6fac30feb665164345e5c8f7281833bf63154a9ad0e1347f7033af95c79f42"
+  "hash": "95e8d1616a6f70f44912886b539e3367002cb9455e9ad859c61e73fc45e1cc80"
 }

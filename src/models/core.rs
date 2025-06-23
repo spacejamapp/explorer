@@ -1,4 +1,4 @@
-use anyhow::{Result, anyhow};
+use anyhow::Result;
 use async_graphql::SimpleObject;
 use score::statistic::CoreActivityRecord;
 use serde::{Deserialize, Serialize};
@@ -6,7 +6,7 @@ use sqlx::PgPool;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Core {
-    id: i32,
+    pub id: i32,
     epoch: i32,
     vindex: i32,
     gas_used: i64,
@@ -20,18 +20,39 @@ pub struct Core {
 }
 
 impl Core {
-    pub async fn list_by_index(pool: &PgPool, index: i32, from: i64, to: i64) -> Result<Vec<Self>> {
-        if to < from || to - from > 100 {
-            return Err(anyhow!("No more than 100 rows in a single query"));
-        }
-        let offset = if from < 0 { 1 } else { from - 1 };
-
+    /// List all cores in the epoch
+    pub async fn list_by_epoch(
+        pool: &PgPool,
+        epoch: i32,
+        limit: i32,
+        cursor: i32,
+    ) -> Result<Vec<Self>> {
         let data = query_as!(
             Self,
-            "SELECT * FROM cores WHERE vindex = $1 ORDER BY id DESC LIMIT $2 OFFSET $3",
+            "SELECT * FROM cores WHERE epoch=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+            epoch,
+            cursor,
+            limit as i64 + 1
+        )
+        .fetch_all(pool)
+        .await?;
+
+        Ok(data)
+    }
+
+    /// list all core's epoch statistics
+    pub async fn list_by_index(
+        pool: &PgPool,
+        index: i32,
+        limit: i32,
+        cursor: i32,
+    ) -> Result<Vec<Self>> {
+        let data = query_as!(
+            Self,
+            "SELECT * FROM cores WHERE vindex=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
             index,
-            to - from,
-            offset
+            cursor,
+            limit as i64 + 1
         )
         .fetch_all(pool)
         .await?;

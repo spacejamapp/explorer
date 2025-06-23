@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM epochs ORDER BY id DESC LIMIT $1 OFFSET $2",
+  "query": "SELECT * FROM work_results WHERE guarantee = $1",
   "describe": {
     "columns": [
       {
@@ -10,64 +10,63 @@
       },
       {
         "ordinal": 1,
-        "name": "block",
+        "name": "guarantee",
         "type_info": "Int4"
       },
       {
         "ordinal": 2,
-        "name": "entropy",
-        "type_info": "Varchar"
+        "name": "service",
+        "type_info": "Int4"
       },
       {
         "ordinal": 3,
-        "name": "tickets_entropy",
+        "name": "code",
         "type_info": "Varchar"
       },
       {
         "ordinal": 4,
-        "name": "validators",
-        "type_info": "VarcharArray"
+        "name": "payload",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 5,
-        "name": "validators_bandersnatches",
-        "type_info": "VarcharArray"
+        "name": "gas",
+        "type_info": "Int8"
       },
       {
         "ordinal": 6,
-        "name": "blocks",
-        "type_info": "Int4"
+        "name": "result",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 7,
-        "name": "tickets",
-        "type_info": "Int4"
+        "name": "refine_gas",
+        "type_info": "Int8"
       },
       {
         "ordinal": 8,
-        "name": "preimages",
+        "name": "refine_imports",
         "type_info": "Int4"
       },
       {
         "ordinal": 9,
-        "name": "preimages_size",
+        "name": "refine_extrinsic_count",
         "type_info": "Int4"
       },
       {
         "ordinal": 10,
-        "name": "guarantees",
+        "name": "refine_extrinsic_size",
         "type_info": "Int4"
       },
       {
         "ordinal": 11,
-        "name": "assurances",
+        "name": "refine_exports",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Int8",
-        "Int8"
+        "Int4"
       ]
     },
     "nullable": [
@@ -85,5 +84,5 @@
       false
     ]
   },
-  "hash": "2570b703d00151ffc530de6ddafcc027a610bb9ca68615bf8df7476ff4fb9d60"
+  "hash": "6210e87801727d12c69fd4d354dd06ca622e7443ef411c8f8d88fd5b4b437b83"
 }

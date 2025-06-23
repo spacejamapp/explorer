@@ -18,11 +18,17 @@ tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
 
 # spacejam dependencies
-#
-# need to fix the auth in github actions if using ssh
 jamcodec = { git = "https://github.com/spacejamapp/spacejam", branch = "jadex" }
 runtime = { git = "https://github.com/spacejamapp/spacejam", package = "spacejam-runtime", branch = "jadex" }
 score = { git = "https://github.com/spacejamapp/spacejam", package = "spacejam-core", branch = "jadex" }
 spacejam-crypto = { git = "https://github.com/spacejamapp/spacejam", branch = "jadex" }
 spacejson = { git = "https://github.com/spacejamapp/spacejam", branch = "jadex" }
 jadex = { git = "https://github.com/spacejamapp/spacejam", branch = "jadex" }
+
+# need to fix the auth in github actions if using ssh
+# jamcodec = { git = "ssh://git@github.com/spacejamapp/spacejam", branch = "jadex" }
+# runtime = { git = "ssh://git@github.com/spacejamapp/spacejam", package = "spacejam-runtime", branch = "jadex" }
+# score = { git = "ssh://git@github.com/spacejamapp/spacejam", package = "spacejam-core", branch = "jadex" }
+# spacejam-crypto = { git = "ssh://git@github.com/spacejamapp/spacejam", branch = "jadex" }
+# spacejson = { git = "ssh://git@github.com/spacejamapp/spacejam", branch = "jadex" }
+# jadex = { git = "ssh://git@github.com/spacejamapp/spacejam", branch = "jadex" }

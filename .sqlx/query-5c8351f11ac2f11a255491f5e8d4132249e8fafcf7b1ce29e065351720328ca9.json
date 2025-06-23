@@ -25,7 +25,7 @@
       },
       {
         "ordinal": 4,
-        "name": "validators",
+        "name": "validators_ed25519",
         "type_info": "VarcharArray"
       },
       {

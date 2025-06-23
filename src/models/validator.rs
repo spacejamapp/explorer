@@ -1,11 +1,11 @@
-use anyhow::{Result, anyhow};
+use anyhow::Result;
 use async_graphql::SimpleObject;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Validator {
-    id: i32,
+    pub id: i32,
     epoch: i32,
     vindex: i32,
     blocks: i32,
@@ -16,31 +16,39 @@ pub struct Validator {
 }
 
 impl Validator {
-    pub async fn list_by_epoch(pool: &PgPool, epoch: i32) -> Result<Vec<Self>> {
-        let data = query_as!(Self, "SELECT * FROM validators WHERE epoch=$1", epoch)
-            .fetch_all(pool)
-            .await?;
+    /// List all validators in the epoch
+    pub async fn list_by_epoch(
+        pool: &PgPool,
+        epoch: i32,
+        limit: i32,
+        cursor: i32,
+    ) -> Result<Vec<Self>> {
+        let data = query_as!(
+            Self,
+            "SELECT * FROM validators WHERE epoch=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+            epoch,
+            cursor,
+            limit as i64 + 1
+        )
+        .fetch_all(pool)
+        .await?;
 
         Ok(data)
     }
 
-    pub async fn list_by_vindex(
+    /// list all validator's epoch statistics
+    pub async fn list_by_index(
         pool: &PgPool,
-        vindex: i32,
-        from: i64,
-        to: i64,
+        index: i32,
+        limit: i32,
+        cursor: i32,
     ) -> Result<Vec<Self>> {
-        if to < from || to - from > 100 {
-            return Err(anyhow!("No more than 100 rows in a single query"));
-        }
-        let offset = if from < 0 { 1 } else { from - 1 };
-
         let data = query_as!(
             Self,
-            "SELECT * FROM validators WHERE vindex=$1 ORDER BY id DESC LIMIT $2 OFFSET $3",
-            vindex,
-            to - from,
-            offset
+            "SELECT * FROM validators WHERE vindex=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+            index,
+            cursor,
+            limit as i64 + 1
         )
         .fetch_all(pool)
         .await?;

@@ -4,14 +4,28 @@ use score::extrinsic::ReportGuarantee;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+use crate::models::WorkResult;
+
+/// ReportGuarantee (WorkReport)
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Guarantee {
     id: i32,
     block: i32,
-    report: String,
     slot: i32,
-    // [1:xxxx, 2:xxxx, 3:xxxx]
+    /// The signatures [1:xxxx, 2:xxxx, 3:xxxx]
     signatures: Vec<String>,
+    /// The hash of the package spec
+    spec: String,
+    /// The core index of this
+    core: i32,
+    /// The authorizer hash
+    authorizer_hash: String,
+    /// The auth output
+    auth_output: String,
+    /// The auth gas used
+    auth_gas: i64,
+    // Vec<SegmentRootLookup>
+    // RefineContext
 }
 
 impl Guarantee {
@@ -33,25 +47,37 @@ impl Guarantee {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, guarantee: &ReportGuarantee) -> Result<i32> {
-        let package_hash = hex::encode(guarantee.report.spec.hash);
+        let slot = guarantee.slot as i32;
         let signatures = guarantee
             .signatures
             .iter()
             .map(|sig| format!("{}:{}", sig.validator_index, hex::encode(sig.signature)))
             .collect::<Vec<String>>();
+        let spec = hex::encode(guarantee.report.spec.hash);
+        let core = guarantee.report.core_index as i32;
+        let authorizer_hash = hex::encode(guarantee.report.authorizer_hash);
+        let auth_output = hex::encode(&guarantee.report.auth_output);
+        let auth_gas = guarantee.report.auth_gas_used as i64;
 
-        // TODO save work report
-        let num = guarantee.report.results.len() as i32;
-
-        query!(
-            "INSERT INTO guarantees (block,report,slot,signatures) VALUES ($1,$2,$3,$4)",
+        let id = query_scalar!(
+            "INSERT INTO guarantees (block,slot,signatures,spec,core,authorizer_hash,auth_output,auth_gas) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id",
             block,
-            package_hash,
-            guarantee.slot as i32,
+            slot,
             &signatures,
+            spec,
+            core,
+            authorizer_hash,
+            auth_output,
+            auth_gas
         )
-        .execute(pool)
-        .await?;
+            .fetch_one(pool)
+            .await?;
+
+        // save work result
+        let num = guarantee.report.results.len() as i32;
+        for r in guarantee.report.results.iter() {
+            let _ = WorkResult::insert(pool, id, r).await;
+        }
 
         Ok(num)
     }

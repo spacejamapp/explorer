@@ -3,19 +3,44 @@
 use crate::{
     Manager,
     manager::Spacejam,
-    models::{Block, Core, Epoch, Header, Validator},
+    models::{Block, Core, Epoch, Header, Service, Validator},
 };
-use async_graphql::{Context, Object, Result};
+use async_graphql::{
+    Context, Object, Result,
+    connection::{Connection, Edge, EmptyFields},
+};
 
 /// Query root for jamscan
 pub struct QueryRoot;
 
 #[Object]
 impl QueryRoot {
-    async fn headers(&self, ctx: &Context<'_>, from: i64, to: i64) -> Result<Vec<Header>> {
+    /// Get the spacejam cache
+    async fn spacejam(&self, ctx: &Context<'_>) -> Result<Spacejam> {
+        Ok(ctx.data::<Manager>()?.spacejam.read().await.clone())
+    }
+
+    /// List headers by page
+    async fn headers(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
+        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
+    ) -> Result<Connection<String, Header, EmptyFields, EmptyFields>> {
+        let limit = first.unwrap_or(10).min(100);
+        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
-        let data = Header::list(pool, from, to).await?;
-        Ok(data)
+
+        let headers = Header::list(pool, limit, cursor).await?;
+        let items = headers.into_iter().take(limit as usize).collect::<Vec<_>>();
+
+        let has_next_page = items.len() > limit as usize;
+        let mut connection = Connection::new(false, has_next_page);
+        connection.edges = items
+            .into_iter()
+            .map(|item| Edge::new(item.slot.to_string(), item))
+            .collect();
+        Ok(connection)
     }
 
     /// Get the raw block data from the database.
@@ -27,44 +52,95 @@ impl QueryRoot {
     }
 
     /// Get the block data from the database.
-    async fn block(&self, ctx: &Context<'_>, slot: i32) -> Result<Block> {
-        let pool = &ctx.data::<Manager>()?.pg;
-        let block = Block::get(pool, slot).await?;
-        Ok(block)
+    async fn block(&self, _ctx: &Context<'_>, slot: i32) -> Result<Block> {
+        Ok(Block { slot })
     }
 
+    /// Get the epoch by id
     async fn epoch(&self, ctx: &Context<'_>, id: i32) -> Result<Epoch> {
         let pool = &ctx.data::<Manager>()?.pg;
         let epoch = Epoch::get(pool, id).await?;
         Ok(epoch)
     }
 
-    async fn validators(&self, ctx: &Context<'_>, epoch: i32) -> Result<Vec<Validator>> {
-        let pool = &ctx.data::<Manager>()?.pg;
-        let block = Validator::list_by_epoch(pool, epoch).await?;
-        Ok(block)
-    }
-
+    /// Get the validator with all epoch statistics
     async fn validator(
         &self,
         ctx: &Context<'_>,
         index: i32,
-        from: i64,
-        to: i64,
-    ) -> Result<Vec<Validator>> {
+        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
+        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
+    ) -> Result<Connection<String, Validator, EmptyFields, EmptyFields>> {
+        let limit = first.unwrap_or(10).min(100);
+        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
-        let block = Validator::list_by_vindex(pool, index, from, to).await?;
-        Ok(block)
+
+        let vs = Validator::list_by_index(pool, index, limit, cursor).await?;
+        let items = vs.into_iter().take(limit as usize).collect::<Vec<_>>();
+
+        let has_next_page = items.len() > limit as usize;
+        let mut connection = Connection::new(false, has_next_page);
+        connection.edges = items
+            .into_iter()
+            .map(|item| Edge::new(item.id.to_string(), item))
+            .collect();
+        Ok(connection)
     }
 
-    async fn core(&self, ctx: &Context<'_>, index: i32, from: i64, to: i64) -> Result<Vec<Core>> {
+    /// Get the core with all epoch statistics
+    async fn core(
+        &self,
+        ctx: &Context<'_>,
+        index: i32,
+        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
+        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
+    ) -> Result<Connection<String, Core, EmptyFields, EmptyFields>> {
+        let limit = first.unwrap_or(10).min(100);
+        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
-        let cores = Core::list_by_index(pool, index, from, to).await?;
-        Ok(cores)
+
+        let cores = Core::list_by_index(pool, index, limit, cursor).await?;
+        let items = cores.into_iter().take(limit as usize).collect::<Vec<_>>();
+
+        let has_next_page = items.len() > limit as usize;
+        let mut connection = Connection::new(false, has_next_page);
+        connection.edges = items
+            .into_iter()
+            .map(|item| Edge::new(item.id.to_string(), item))
+            .collect();
+        Ok(connection)
     }
 
-    /// Get the spacejam cache
-    async fn spacejam(&self, ctx: &Context<'_>) -> Result<Spacejam> {
-        Ok(ctx.data::<Manager>()?.spacejam.read().await.clone())
+    /// List all services
+    async fn services(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
+        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
+    ) -> Result<Connection<String, Service, EmptyFields, EmptyFields>> {
+        let limit = first.unwrap_or(10).min(100);
+        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
+        let pool = &ctx.data::<Manager>()?.pg;
+
+        let services = Service::list(pool, limit, cursor).await?;
+        let items = services
+            .into_iter()
+            .take(limit as usize)
+            .collect::<Vec<_>>();
+
+        let has_next_page = items.len() > limit as usize;
+        let mut connection = Connection::new(false, has_next_page);
+        connection.edges = items
+            .into_iter()
+            .map(|item| Edge::new(item.id.to_string(), item))
+            .collect();
+        Ok(connection)
+    }
+
+    /// Get the service
+    async fn service(&self, ctx: &Context<'_>, id: i32) -> Result<Service> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let service = Service::get(pool, id).await?;
+        Ok(service)
     }
 }
