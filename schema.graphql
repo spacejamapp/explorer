@@ -1,0 +1,599 @@
+type Assurance {
+	id: Int!
+	block: Int!
+	anchor: String!
+	bitfield: String!
+	validatorIndex: Int!
+	signature: String!
+}
+
+type Block {
+	header: BlockHeader!
+	extrinsic: BlockExtrinsic!
+}
+
+type BlockExtrinsic {
+	tickets: [Envelope!]!
+	preimages: [Preimage!]!
+	guarantees: [Guarantee!]!
+	assurances: [Assurance!]!
+	disputes: Dispute!
+}
+
+type BlockHeader {
+	slot: Int!
+	hash: String!
+	parent: String!
+	parentStateRoot: String!
+	extrinsicHash: String!
+	extrinsicCount: Int!
+	authorIndex: Int!
+	entropySource: String!
+	seal: String!
+	offendersMark: [String!]!
+	epochMark: Epoch
+	ticketsMark: [Ticket!]!
+}
+
+type Core {
+	id: Int!
+	epoch: Int!
+	vindex: Int!
+	gasUsed: Int!
+	imports: Int!
+	extrinsicCount: Int!
+	extrinsicSize: Int!
+	exports: Int!
+	bundleSize: Int!
+	daLoad: Int!
+	popularity: Int!
+}
+
+type CoreConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [CoreEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Core!]!
+}
+
+"""
+An edge in a connection.
+"""
+type CoreEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Core!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+type Dispute {
+	verdicts: [DisputeVerdict!]!
+	culprits: [DisputeCulprit!]!
+	faults: [DisputeFault!]!
+}
+
+type DisputeCulprit {
+	id: Int!
+	block: Int!
+	target: String!
+	key: String!
+	signature: String!
+}
+
+type DisputeFault {
+	id: Int!
+	block: Int!
+	target: String!
+	vote: Boolean!
+	key: String!
+	signature: String!
+}
+
+type DisputeVerdict {
+	id: Int!
+	block: Int!
+	target: String!
+	age: Int!
+	votes: [String!]!
+}
+
+type Envelope {
+	id: Int!
+	block: Int!
+	attempt: Int!
+	signature: String!
+}
+
+type Epoch {
+	id: Int!
+	block: Int!
+	entropy: String!
+	ticketsEntropy: String!
+	validatorsEd25519: [String!]!
+	validatorsBandersnatches: [String!]!
+	blocks: Int!
+	tickets: Int!
+	preimages: Int!
+	preimagesSize: Int!
+	guarantees: Int!
+	assurances: Int!
+	validators(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): ValidatorConnection!
+	cores(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): CoreConnection!
+}
+
+"""
+ReportGuarantee (WorkReport)
+"""
+type Guarantee {
+	id: Int!
+	block: Int!
+	slot: Int!
+	"""
+	The signatures [1:xxxx, 2:xxxx, 3:xxxx]
+	"""
+	signatures: [String!]!
+	"""
+	The hash of the package spec
+	"""
+	spec: String!
+	"""
+	The core index of this
+	"""
+	core: Int!
+	"""
+	The authorizer hash
+	"""
+	authorizerHash: String!
+	"""
+	The auth output
+	"""
+	authOutput: String!
+	"""
+	The auth gas used
+	"""
+	authGas: Int!
+}
+
+type Header {
+	slot: Int!
+	hash: String!
+	parent: String!
+	parentStateRoot: String!
+	extrinsicHash: String!
+	extrinsicCount: Int!
+	authorIndex: Int!
+	entropySource: String!
+	seal: String!
+	offendersMark: [String!]!
+	currentEpoch: Int!
+}
+
+type HeaderConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [HeaderEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Header!]!
+}
+
+"""
+An edge in a connection.
+"""
+type HeaderEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Header!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+"""
+Information about pagination in a connection
+"""
+type PageInfo {
+	"""
+	When paginating backwards, are there more items?
+	"""
+	hasPreviousPage: Boolean!
+	"""
+	When paginating forwards, are there more items?
+	"""
+	hasNextPage: Boolean!
+	"""
+	When paginating backwards, the cursor to continue.
+	"""
+	startCursor: String
+	"""
+	When paginating forwards, the cursor to continue.
+	"""
+	endCursor: String
+}
+
+type Preimage {
+	id: Int!
+	block: Int!
+	requester: Int!
+	hash: String!
+	blob: [Int!]!
+}
+
+type PreimageConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [PreimageEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Preimage!]!
+}
+
+"""
+An edge in a connection.
+"""
+type PreimageEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Preimage!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+type QueryRoot {
+	"""
+	Get the spacejam cache
+	"""
+	spacejam: Spacejam!
+	"""
+	List headers by page
+	"""
+	headers(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): HeaderConnection!
+	"""
+	Get the raw block data from the database.
+	"""
+	blockRaw(slot: Int!): String!
+	"""
+	Get the block data from the database.
+	"""
+	block(slot: Int!): Block!
+	"""
+	Get the epoch by id
+	"""
+	epoch(id: Int!): Epoch!
+	"""
+	Get the validator with all epoch statistics
+	"""
+	validator(		index: Int!,		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): ValidatorConnection!
+	"""
+	Get the core with all epoch statistics
+	"""
+	core(		index: Int!,		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): CoreConnection!
+	"""
+	List all services
+	"""
+	services(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): ServiceConnection!
+	"""
+	Get the service
+	"""
+	service(id: Int!): Service!
+}
+
+type Service {
+	"""
+	The key of the service
+	"""
+	id: Int!
+	"""
+	The code hash of the service account (c)
+	"""
+	code: String!
+	"""
+	The balance of the service account (b)
+	"""
+	balance: Int!
+	"""
+	The accumulate gas of the service account (g)
+	"""
+	accumulate: Int!
+	"""
+	The minimum required for the on transfer entry-point (m)
+	"""
+	transfer: Int!
+	"""
+	The total number of octets used in storage (o)
+	"""
+	total: Int!
+	"""
+	The number of items in storage (i)
+	"""
+	items: Int!
+	preimages(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): PreimageConnection!
+	works(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): WorkResultConnection!
+}
+
+type ServiceConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [ServiceEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Service!]!
+}
+
+"""
+An edge in a connection.
+"""
+type ServiceEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Service!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+"""
+Spacejam global state
+"""
+type Spacejam {
+	"""
+	The total number of tickets
+	"""
+	tickets: Int!
+	"""
+	The total number of preimages
+	"""
+	preimages: Int!
+	"""
+	The total number of guarantees
+	"""
+	guarantees: Int!
+	"""
+	The total number of assurances
+	"""
+	assurances: Int!
+	"""
+	The total number of disputes verdicts
+	"""
+	disputesVerdicts: Int!
+	"""
+	The total number of disputes culprits
+	"""
+	disputesCulprits: Int!
+	"""
+	The total number of disputes faults
+	"""
+	disputesFaults: Int!
+	"""
+	The total number of blocks
+	"""
+	blocks: Int!
+	"""
+	The slot of the last finalized block
+	"""
+	finalized: Int!
+	"""
+	The total number of services
+	"""
+	services: Int!
+	"""
+	The total number of extrinsics
+	"""
+	extrinsics: Int!
+}
+
+type Ticket {
+	id: Int!
+	block: Int!
+	ticketId: String!
+	attempt: Int!
+}
+
+type Validator {
+	id: Int!
+	epoch: Int!
+	vindex: Int!
+	blocks: Int!
+	tickets: Int!
+	preimages: Int!
+	guarantees: Int!
+	assurances: Int!
+}
+
+type ValidatorConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [ValidatorEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Validator!]!
+}
+
+"""
+An edge in a connection.
+"""
+type ValidatorEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Validator!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+type WorkResult {
+	"""
+	The key of the service
+	"""
+	id: Int!
+	"""
+	guarantee(work report) id
+	"""
+	guarantee: Int!
+	"""
+	The service id
+	"""
+	service: Int!
+	"""
+	The code hash
+	"""
+	code: String!
+	"""
+	The hash of payload
+	"""
+	payload: String!
+	"""
+	The accumulate gas
+	"""
+	gas: Int!
+	"""
+	The execute result (enum)
+	"""
+	result: String!
+	"""
+	Refine: gas used
+	"""
+	refineGas: Int!
+	"""
+	Refine: the number of imports
+	"""
+	refineImports: Int!
+	"""
+	Refine: the number of extrinsic
+	"""
+	refineExtrinsicCount: Int!
+	"""
+	Refine: the size of extrinsic
+	"""
+	refineExtrinsicSize: Int!
+	"""
+	Refine: the number of exports
+	"""
+	refineExports: Int!
+}
+
+type WorkResultConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [WorkResultEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [WorkResult!]!
+}
+
+"""
+An edge in a connection.
+"""
+type WorkResultEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: WorkResult!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+"""
+Directs the executor to include this field or fragment only when the `if` argument is true.
+"""
+directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+"""
+Directs the executor to skip this field or fragment when the `if` argument is true.
+"""
+directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+schema {
+	query: QueryRoot
+}

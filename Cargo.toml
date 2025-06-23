@@ -2,6 +2,7 @@
 name = "jamscan"
 version = "0.0.0"
 edition = "2024"
+default-run = "jamscan"
 
 [dependencies]
 anyhow = "1.0.98"

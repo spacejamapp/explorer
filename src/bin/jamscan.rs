@@ -1,4 +1,4 @@
-//! Stores header data in postgres
+//! JAM scan service
 
 use async_graphql::{EmptyMutation, EmptySubscription};
 use clap::{ArgAction, CommandFactory, Parser};
