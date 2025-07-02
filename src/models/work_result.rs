@@ -4,6 +4,8 @@ use score::service::{WorkExecResult, WorkResult as JamWorkResult};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+use crate::models::hex;
+
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct WorkResult {
     /// The key of the service
@@ -68,11 +70,11 @@ impl WorkResult {
 
     pub async fn insert(pool: &PgPool, guarantee: i32, result: &JamWorkResult) -> Result<()> {
         let service = result.service_id as i32;
-        let code = hex::encode(result.code_hash);
-        let payload = hex::encode(result.payload_hash);
+        let code = hex(result.code_hash);
+        let payload = hex(result.payload_hash);
         let gas = result.accumulate_gas as i64;
         let wresult = match &result.result {
-            WorkExecResult::Ok(data) => format!("Ok({})", hex::encode(data)),
+            WorkExecResult::Ok(data) => format!("Ok({})", hex(data)),
             WorkExecResult::OutOfGas => "Out of gas".to_owned(),
             WorkExecResult::Panic => "Panic".to_owned(),
             WorkExecResult::BadCode => "Bad code".to_owned(),

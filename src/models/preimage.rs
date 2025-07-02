@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use spacejam_crypto::blake2b;
 use sqlx::PgPool;
 
+use crate::models::hex;
+
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Preimage {
     pub id: i32,
@@ -55,7 +57,7 @@ impl Preimage {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, preimage: &JamPreimage) -> Result<()> {
-        let image_hash = hex::encode(blake2b(&preimage.blob));
+        let image_hash = hex(blake2b(&preimage.blob));
 
         query!(
             "INSERT INTO preimages (block,requester,hash,blob) VALUES ($1,$2,$3,$4)",

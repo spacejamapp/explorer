@@ -9,7 +9,7 @@ use sqlx::PgPool;
 
 use crate::{
     Manager,
-    models::{Core, Validator},
+    models::{Core, Validator, hex},
 };
 
 #[derive(SimpleObject, Serialize, Deserialize)]
@@ -94,14 +94,14 @@ impl Epoch {
     /// FIXME: should accumulate the extrinsic count
     #[allow(dead_code)]
     pub async fn insert(pool: &PgPool, block: i32, epoch: &EpochMark) -> Result<i32> {
-        let entropy = hex::encode(epoch.entropy);
-        let tickets_entropy = hex::encode(epoch.tickets_entropy);
+        let entropy = hex(epoch.entropy);
+        let tickets_entropy = hex(epoch.tickets_entropy);
         // save validator, and use ed25519 as the primary key
         let mut validators_ed25519 = vec![];
         let mut validators_bandersnatches = vec![];
         for validator in epoch.validators {
-            validators_ed25519.push(hex::encode(validator.ed25519));
-            validators_bandersnatches.push(hex::encode(validator.bandersnatch));
+            validators_ed25519.push(hex(validator.ed25519));
+            validators_bandersnatches.push(hex(validator.bandersnatch));
         }
 
         let epoch_id = block / EPOCH_LENGTH as i32 + 1;

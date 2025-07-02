@@ -4,6 +4,8 @@ use score::block::Header as JamHeader;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+use crate::models::hex;
+
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Header {
     pub slot: i32,
@@ -52,19 +54,19 @@ impl Header {
         header: &JamHeader,
     ) -> Result<()> {
         // save the block(header)
-        let block_hash = hex::encode(header.hash()?);
-        let parent = hex::encode(header.parent);
-        let parent_state_root = hex::encode(header.parent_state_root);
-        let extrinsic_hash = hex::encode(header.extrinsic_hash);
+        let block_hash = hex(header.hash()?);
+        let parent = hex(header.parent);
+        let parent_state_root = hex(header.parent_state_root);
+        let extrinsic_hash = hex(header.extrinsic_hash);
         let author_index = header.author_index;
-        let entropy_source = hex::encode(header.entropy_source);
-        let seal = hex::encode(header.seal);
+        let entropy_source = hex(header.entropy_source);
+        let seal = hex(header.seal);
 
         // FIXME if need save the offenders for validators?
         let offenders_mark = header
             .offenders_mark
             .iter()
-            .map(hex::encode)
+            .map(hex)
             .collect::<Vec<String>>();
 
         query!(

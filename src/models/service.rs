@@ -9,7 +9,7 @@ use sqlx::PgPool;
 
 use crate::{
     Manager,
-    models::{Preimage, WorkResult},
+    models::{Preimage, WorkResult, hex},
 };
 
 #[derive(SimpleObject, Serialize, Deserialize)]
@@ -109,7 +109,7 @@ impl Service {
 
     pub async fn insert(pool: &PgPool, sid: ServiceId, data: &ServiceData) -> Result<()> {
         let id = sid as i32;
-        let code = hex::encode(data.code);
+        let code = hex(data.code);
 
         // update service
         if let Ok(s) = Self::get(pool, id).await {

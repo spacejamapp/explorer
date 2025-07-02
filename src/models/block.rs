@@ -133,6 +133,12 @@ impl Block {
             .execute(pool)
             .await?;
 
+        let epoch_id = if let Some(epoch) = &block.header.epoch_mark {
+            Epoch::insert(pool, slot, epoch).await?
+        } else {
+            slot / EPOCH_LENGTH as i32
+        };
+
         // save tickets
         if let Some(tickets) = &block.header.tickets_mark {
             for ticket in tickets {
@@ -183,13 +189,12 @@ impl Block {
         }
 
         // save header
-        let epoch = slot / EPOCH_LENGTH as i32;
-        Header::insert(pool, slot, extrinsic_count, epoch, &block.header).await?;
+        Header::insert(pool, slot, extrinsic_count, epoch_id, &block.header).await?;
 
         // save validators
         Validator::new_block(
             pool,
-            epoch,
+            epoch_id,
             block.header.author_index as i32,
             tickets_num,
             preimages_num,
