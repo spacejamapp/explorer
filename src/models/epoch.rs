@@ -15,7 +15,7 @@ use crate::{
 #[derive(SimpleObject, Serialize, Deserialize)]
 #[graphql(complex)]
 pub struct Epoch {
-    id: i32,
+    pub id: i32,
     block: i32,
     entropy: String,
     tickets_entropy: String,
@@ -75,6 +75,14 @@ impl Epoch {
 }
 
 impl Epoch {
+    pub async fn last(pool: &PgPool) -> Result<Self> {
+        let data = query_as!(Self, "SELECT * FROM epochs ORDER BY id DESC limit 1")
+            .fetch_one(pool)
+            .await?;
+
+        Ok(data)
+    }
+
     pub async fn get(pool: &PgPool, id: i32) -> Result<Self> {
         let data = query_as!(Self, "SELECT * FROM epochs WHERE id = $1", id)
             .fetch_one(pool)

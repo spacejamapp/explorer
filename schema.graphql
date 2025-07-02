@@ -457,6 +457,10 @@ type Spacejam {
 	The total number of extrinsics
 	"""
 	extrinsics: Int!
+  """
+	Current epoch
+	"""
+  epoch: Int!
 }
 
 type Ticket {
