@@ -1,8 +1,8 @@
 //! The spacejam cache in memory
 
 use crate::models::{
-    Assurance, Block, DisputeCulprit, DisputeFault, DisputeVerdict, Guarantee, Preimage, Service,
-    Ticket, Epoch,
+    Assurance, Block, DisputeCulprit, DisputeFault, DisputeVerdict, Epoch, Guarantee, Preimage,
+    Service, Ticket,
 };
 use anyhow::Result;
 use async_graphql::{ComplexObject, SimpleObject};
@@ -73,7 +73,7 @@ impl Spacejam {
         let disputes_faults = DisputeFault::count(pg).await?;
         let blocks = Block::count(pg).await?;
         let services = Service::count(pg).await?;
-        let epoch = Epoch::last(pg).await.map(|e|e.id).unwrap_or(0);
+        let epoch = Epoch::last(pg).await.map(|e| e.id).unwrap_or(0);
 
         Ok(Spacejam {
             tickets,

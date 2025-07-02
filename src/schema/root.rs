@@ -57,9 +57,9 @@ impl QueryRoot {
     }
 
     /// Get the epoch by id
-    async fn epoch(&self, ctx: &Context<'_>, id: i32) -> Result<Epoch> {
+    async fn epoch(&self, ctx: &Context<'_>, id: i32) -> Result<Option<Epoch>> {
         let pool = &ctx.data::<Manager>()?.pg;
-        let epoch = Epoch::get(pool, id).await?;
+        let epoch = Epoch::get(pool, id).await.ok();
         Ok(epoch)
     }
 
@@ -138,9 +138,9 @@ impl QueryRoot {
     }
 
     /// Get the service
-    async fn service(&self, ctx: &Context<'_>, id: i32) -> Result<Service> {
+    async fn service(&self, ctx: &Context<'_>, id: i32) -> Result<Option<Service>> {
         let pool = &ctx.data::<Manager>()?.pg;
-        let service = Service::get(pool, id).await?;
+        let service = Service::get(pool, id).await.ok();
         Ok(service)
     }
 }
