@@ -776,9 +776,9 @@ dependencies = [
 
 [[package]]
 name = "bumpalo"
-version = "3.18.1"
+version = "3.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "793db76d6187cd04dff33004d8e6c9cc4e05cd330500379d2394209271b4aeee"
+checksum = "46c5e41b57b8bba42a04676d81cb89e9ee8e859a1a66f80a5a72e1cb76b34d43"
 
 [[package]]
 name = "bytemuck"
@@ -1015,9 +1015,9 @@ checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
 name = "crunchy"
-version = "0.2.3"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43da5946c66ffcc7745f48db692ffbb10a83bfe0afd96235c5c2a4fb23994929"
+checksum = "460fbee9c2c2f33933d720630a6a0bac33ba7053db5344fac858d4b8952d77d5"
 
 [[package]]
 name = "crypto-common"
@@ -1988,14 +1988,15 @@ checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 
 [[package]]
 name = "jadex"
-version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+version = "0.1.0"
+source = "git+https://github.com/spacejamapp/jade.git?branch=testnet#e935984544ba1ee2d7f6369a9b1c5f7fe6c56bde"
 dependencies = [
  "anyhow",
  "async-graphql",
  "async-graphql-axum",
  "axum",
  "clap",
+ "dirs",
  "hex",
  "jamcodec",
  "serde_json",
@@ -2013,7 +2014,7 @@ dependencies = [
 [[package]]
 name = "jamcodec"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "serde",
@@ -2033,6 +2034,7 @@ dependencies = [
  "redis",
  "serde",
  "serde_json",
+ "sha2",
  "spacejam-core",
  "spacejam-crypto",
  "spacejam-runtime",
@@ -2304,9 +2306,9 @@ checksum = "f9fbbcab51052fe104eb5e5d351cf728d30a5be1fe14d9be8a3b097481fb97de"
 
 [[package]]
 name = "libredox"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0ff37bd590ca25063e35af745c343cb7a0271906fb7b37e4813e8f79f00268d"
+checksum = "1580801010e535496706ba011c15f8532df6b42297d2e471fec38ceadd8c0638"
 dependencies = [
  "bitflags",
  "libc",
@@ -2884,7 +2886,7 @@ dependencies = [
 [[package]]
 name = "pvm"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "hex",
@@ -2899,7 +2901,7 @@ dependencies = [
 [[package]]
 name = "pvm-parser"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "heck",
@@ -3618,7 +3620,7 @@ dependencies = [
 [[package]]
 name = "spacejam"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3646,7 +3648,7 @@ dependencies = [
 [[package]]
 name = "spacejam-core"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "hex",
@@ -3660,7 +3662,7 @@ dependencies = [
 [[package]]
 name = "spacejam-crypto"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "ark-ec 0.5.0",
@@ -3679,7 +3681,7 @@ dependencies = [
 [[package]]
 name = "spacejam-metrics"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "prometheus-client",
@@ -3688,7 +3690,7 @@ dependencies = [
 [[package]]
 name = "spacejam-network"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "clap",
@@ -3702,7 +3704,6 @@ dependencies = [
  "serde_json",
  "spacejam-core",
  "spacejam-crypto",
- "spacejam-metrics",
  "spacejam-runtime",
  "spacejson",
  "tokio",
@@ -3713,7 +3714,7 @@ dependencies = [
 [[package]]
 name = "spacejam-offchain"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3731,7 +3732,7 @@ dependencies = [
 [[package]]
 name = "spacejam-rpc"
 version = "0.1.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "jsonrpsee",
@@ -3744,7 +3745,7 @@ dependencies = [
 [[package]]
 name = "spacejam-runtime"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "hex",
@@ -3762,7 +3763,7 @@ dependencies = [
 [[package]]
 name = "spacejson"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "anyhow",
  "hex",
@@ -3773,7 +3774,7 @@ dependencies = [
 [[package]]
 name = "spacejson-derive"
 version = "0.0.0"
-source = "git+ssh://git@github.com/spacejamapp/spacejam?branch=jadex#0c0c84184adfe2e5835a3d154f404fa8f6ee03e4"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
 dependencies = [
  "proc-macro2",
  "quote",
