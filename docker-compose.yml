@@ -9,7 +9,15 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -25,10 +33,87 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/jamscan
       DATA_PATH: jamscan_db
+      REDIS_URL: redis://redis
+      GRAPHQL_PORT: 3000
+      DEV: "true"
+      LIGHT: "false"
+      PRUNE: "true"
     ports:
       - "3000:3000"
+
+  polkajam-0:
+    image: clearloop/polkajam:0.1.23
+    network_mode: host
+    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 0 --port 40000 --rpc-port 19800 --pvm-backend=interpreter
+    volumes:
+      - ./data:/shared
+      - ./node/0:/data
+    environment:
+      - RUST_LOG=jam_node=trace
+
+  polkajam-1:
+    image: clearloop/polkajam:0.1.23
+    depends_on:
+      - polkajam-0
+    network_mode: host
+    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 1 --port 40001 --rpc-port 19801 --pvm-backend=interpreter
+    volumes:
+      - ./data:/shared
+      - ./node/1:/data
+    environment:
+      - RUST_LOG=jam_node=trace
+
+  polkajam-2:
+    image: clearloop/polkajam:0.1.23
+    depends_on:
+      - polkajam-0
+    network_mode: host
+    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 2 --port 40002 --rpc-port 19802 --pvm-backend=interpreter
+    volumes:
+      - ./data:/shared
+      - ./node/2:/data
+    environment:
+      - RUST_LOG=jam_node=trace
+
+  polkajam-3:
+    image: clearloop/polkajam:0.1.23
+    depends_on:
+      - polkajam-0
+    network_mode: host
+    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 3 --port 40003 --rpc-port 19803 --pvm-backend=interpreter
+    volumes:
+      - ./data:/shared
+      - ./node/3:/data
+    environment:
+      - RUST_LOG=jam_node=trace
+
+  polkajam-4:
+    image: clearloop/polkajam:0.1.23
+    depends_on:
+      - polkajam-0
+    network_mode: host
+    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 4 --port 40004 --rpc-port 19804 --pvm-backend=interpreter
+    volumes:
+      - ./data:/shared
+      - ./node/4:/data
+    environment:
+      - RUST_LOG=jam_node=trace
+
+  spacejam:
+    image: clearloop/spacejam:0.0.1
+    depends_on:
+      - polkajam-0
+    network_mode: host
+    command: run -d /data --chain /shared/spec.json --validator 5 --address 127.0.0.1:40005
+    volumes:
+      - ./data:/shared
+      - ./node/5:/data
+    environment:
+      - RUST_LOG=spacejam,runtime,network=trace
 
 volumes:
   postgres_data:
   jamscan_db:
   migrations:
+  data:
+  node:
