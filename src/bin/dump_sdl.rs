@@ -1,8 +1,8 @@
 //! Dump graphql SDL
 
 use async_graphql::{EmptyMutation, EmptySubscription, Schema};
-use clap::{ArgAction, CommandFactory, Parser};
-use jamscan::{Manager, schema::QueryRoot};
+use clap::Parser;
+use jamscan::schema::QueryRoot;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
