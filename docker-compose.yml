@@ -1,45 +1,49 @@
 services:
   postgres:
     image: postgres
+    network_mode: host
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: jamscan
+      POSTGRES_PORT: 5555
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
+    network_mode: host
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   jamscan:
     image: clearloop/jsvc:latest
-    platform: linux/amd64
+    network_mode: host
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
-      - jamscan_db:/app/jamscan.db
+      - ./node/light:/data
+      - ./data:/shared
     environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/jamscan
-      DATA_PATH: jamscan_db
-      REDIS_URL: redis://redis
+      DATABASE_URL: postgres://postgres:postgres@localhost:5555/jamscan
+      DATA_PATH: /data
+      REDIS_URL: redis://localhost:6379
       GRAPHQL_PORT: 3000
-      DEV: "true"
-      LIGHT: "false"
+      CHAIN: /shared/spec.json
       PRUNE: "true"
-    ports:
-      - "3000:3000"
+      LIGHT: "true"
+      BOOTNODE: "eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb@127.0.0.1:40000"
+      RUST_LOG: jamscan=debug,network=debug,spacejam=debug,runtime=debug
 
   polkajam-0:
     image: clearloop/polkajam:0.1.23
@@ -109,11 +113,10 @@ services:
       - ./data:/shared
       - ./node/5:/data
     environment:
-      - RUST_LOG=spacejam,runtime,network=trace
+      - RUST_LOG=spacejam=debug,runtime=debug,network=debug
 
 volumes:
   postgres_data:
-  jamscan_db:
   migrations:
   data:
   node:
