@@ -1,7 +1,8 @@
 services:
   postgres:
     image: postgres
-    network_mode: host
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -17,6 +18,8 @@ services:
 
   redis:
     image: redis:7-alpine
+    ports:
+      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -33,9 +36,9 @@ services:
       - ./node/light:/data
       - ./data:/shared
     environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/jamscan
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/jamscan?sslmode=disable
       DATA_PATH: /data
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://localhost:6379
       GRAPHQL_PORT: 3000
       CHAIN: /shared/spec.json
       PRUNE: "true"
