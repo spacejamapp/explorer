@@ -1,72 +1,66 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM work_results WHERE service=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+  "query": "SELECT * FROM headers WHERE slot < $1 ORDER BY slot DESC LIMIT $2",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "id",
+        "name": "slot",
         "type_info": "Int4"
       },
       {
         "ordinal": 1,
-        "name": "guarantee",
-        "type_info": "Int4"
+        "name": "hash",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 2,
-        "name": "service",
-        "type_info": "Int4"
+        "name": "parent",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 3,
-        "name": "code",
+        "name": "parent_state_root",
         "type_info": "Varchar"
       },
       {
         "ordinal": 4,
-        "name": "payload",
+        "name": "extrinsic_hash",
         "type_info": "Varchar"
       },
       {
         "ordinal": 5,
-        "name": "gas",
-        "type_info": "Int8"
+        "name": "extrinsic_count",
+        "type_info": "Int4"
       },
       {
         "ordinal": 6,
-        "name": "result",
-        "type_info": "Varchar"
+        "name": "author_index",
+        "type_info": "Int4"
       },
       {
         "ordinal": 7,
-        "name": "refine_gas",
-        "type_info": "Int8"
+        "name": "entropy_source",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 8,
-        "name": "refine_imports",
-        "type_info": "Int4"
+        "name": "seal",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 9,
-        "name": "refine_extrinsic_count",
-        "type_info": "Int4"
+        "name": "offenders_mark",
+        "type_info": "VarcharArray"
       },
       {
         "ordinal": 10,
-        "name": "refine_extrinsic_size",
-        "type_info": "Int4"
-      },
-      {
-        "ordinal": 11,
-        "name": "refine_exports",
+        "name": "current_epoch",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4",
         "Int4",
         "Int8"
       ]
@@ -82,9 +76,8 @@
       false,
       false,
       false,
-      false,
       false
     ]
   },
-  "hash": "4863f630605ac8f792f55dbf50da271f32c039cd7b2acfaa8de6dae69cbc2456"
+  "hash": "e8d639646db6454a8aa70f35ea0692ccf970e33b3de47d09598498c3a1f0125b"
 }

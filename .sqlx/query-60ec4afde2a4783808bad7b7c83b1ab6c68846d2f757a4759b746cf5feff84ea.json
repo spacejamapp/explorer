@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM services WHERE id>$1 ORDER BY id DESC LIMIT $2",
+  "query": "SELECT * FROM validators WHERE vindex=$1 AND id<$2 ORDER BY id DESC LIMIT $3",
   "describe": {
     "columns": [
       {
@@ -10,37 +10,43 @@
       },
       {
         "ordinal": 1,
-        "name": "code",
-        "type_info": "Varchar"
+        "name": "epoch",
+        "type_info": "Int4"
       },
       {
         "ordinal": 2,
-        "name": "balance",
-        "type_info": "Int8"
+        "name": "vindex",
+        "type_info": "Int4"
       },
       {
         "ordinal": 3,
-        "name": "accumulate",
-        "type_info": "Int8"
+        "name": "blocks",
+        "type_info": "Int4"
       },
       {
         "ordinal": 4,
-        "name": "transfer",
-        "type_info": "Int8"
+        "name": "tickets",
+        "type_info": "Int4"
       },
       {
         "ordinal": 5,
-        "name": "total",
-        "type_info": "Int8"
+        "name": "preimages",
+        "type_info": "Int4"
       },
       {
         "ordinal": 6,
-        "name": "items",
+        "name": "guarantees",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "assurances",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
+        "Int4",
         "Int4",
         "Int8"
       ]
@@ -52,8 +58,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "21a263dbcb6def8c7fabba60d3f01228e7724d4df3e0aeba57282e3632053db8"
+  "hash": "60ec4afde2a4783808bad7b7c83b1ab6c68846d2f757a4759b746cf5feff84ea"
 }
