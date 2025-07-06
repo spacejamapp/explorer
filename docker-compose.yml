@@ -6,7 +6,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: jamscan
-      POSTGRES_PORT: 5555
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
@@ -18,7 +17,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    network_mode: host
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -35,14 +33,14 @@ services:
       - ./node/light:/data
       - ./data:/shared
     environment:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5555/jamscan
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/jamscan
       DATA_PATH: /data
-      REDIS_URL: redis://localhost:6379
+      REDIS_URL: redis://redis:6379
       GRAPHQL_PORT: 3000
       CHAIN: /shared/spec.json
       PRUNE: "true"
       LIGHT: "true"
-      BOOTNODE: "eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb@127.0.0.1:40000"
+      BOOTNODE: "eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb@127.0.0.1:40002"
       RUST_LOG: jamscan=debug,network=debug,spacejam=debug,runtime=debug
 
   polkajam-0:
