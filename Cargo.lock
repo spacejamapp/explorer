@@ -803,9 +803,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.27"
+version = "1.2.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d487aa071b5f64da6f19a3e848e3578944b726ee5a4854b82172f02aa876bfdc"
+checksum = "4ad45f4f74e4e20eaa392913b7b33a7091c87e59628f4dd27888205ad888843c"
 dependencies = [
  "jobserver",
  "libc",
@@ -1619,9 +1619,9 @@ dependencies = [
 
 [[package]]
 name = "h2"
-version = "0.4.10"
+version = "0.4.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9421a676d1b147b16b82c9225157dc629087ef8ec4d5e2960f9437a90dac0a5"
+checksum = "17da50a276f1e01e0ba6c029e47b7100754904ee8a278f886546e98575380785"
 dependencies = [
  "atomic-waker",
  "bytes",
@@ -1938,13 +1938,24 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.9.0"
+version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cea70ddb795996207ad57735b50c5982d8844f38ba9ee5f1aedcfb708a2aa11e"
+checksum = "fe4cd85333e22411419a0bcae1297d25e58c9443848b11dc6a86fefe8c78a661"
 dependencies = [
  "equivalent",
  "hashbrown 0.15.4",
  "serde",
+]
+
+[[package]]
+name = "io-uring"
+version = "0.7.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b86e202f00093dcba4275d4636b93ef9dd75d025ae560d2521b45ea28ab49013"
+dependencies = [
+ "bitflags",
+ "cfg-if",
+ "libc",
 ]
 
 [[package]]
@@ -2014,7 +2025,7 @@ dependencies = [
 [[package]]
 name = "jamcodec"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "serde",
@@ -2886,7 +2897,7 @@ dependencies = [
 [[package]]
 name = "pvm"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "hex",
@@ -2901,7 +2912,7 @@ dependencies = [
 [[package]]
 name = "pvm-parser"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "heck",
@@ -3081,9 +3092,9 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.32.2"
+version = "0.32.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2f6fd3fd5bb3a9a48819ae5cbad501968f208c1abd139649e7e2cf5d7f4b40b"
+checksum = "7f0f6a8c53351d89a3869a703459995a0bcadcfa846002707fbc7e5cca235c4a"
 dependencies = [
  "combine",
  "itoa",
@@ -3620,7 +3631,7 @@ dependencies = [
 [[package]]
 name = "spacejam"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3648,7 +3659,7 @@ dependencies = [
 [[package]]
 name = "spacejam-core"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "hex",
@@ -3662,7 +3673,7 @@ dependencies = [
 [[package]]
 name = "spacejam-crypto"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "ark-ec 0.5.0",
@@ -3681,7 +3692,7 @@ dependencies = [
 [[package]]
 name = "spacejam-metrics"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "prometheus-client",
@@ -3690,7 +3701,7 @@ dependencies = [
 [[package]]
 name = "spacejam-network"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "clap",
@@ -3714,7 +3725,7 @@ dependencies = [
 [[package]]
 name = "spacejam-offchain"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3732,7 +3743,7 @@ dependencies = [
 [[package]]
 name = "spacejam-rpc"
 version = "0.1.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "jsonrpsee",
@@ -3745,7 +3756,7 @@ dependencies = [
 [[package]]
 name = "spacejam-runtime"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "hex",
@@ -3763,7 +3774,7 @@ dependencies = [
 [[package]]
 name = "spacejson"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "anyhow",
  "hex",
@@ -3774,7 +3785,7 @@ dependencies = [
 [[package]]
 name = "spacejson-derive"
 version = "0.0.0"
-source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#420ca164643fe7023794374c01618617160ebcae"
+source = "git+https://github.com/spacejamapp/spacejam.git?branch=node-with-hook#c14fc08623abc03bf0c657040429612def48bede"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4223,16 +4234,18 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.45.1"
+version = "1.46.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75ef51a33ef1da925cea3e4eb122833cb377c61439ca401b770f54902b806779"
+checksum = "0cc3a2344dafbe23a245241fe8b09735b521110d30fcefbbd5feb1797ca35d17"
 dependencies = [
  "backtrace",
  "bytes",
+ "io-uring",
  "libc",
  "mio",
  "pin-project-lite",
  "signal-hook-registry",
+ "slab",
  "socket2",
  "tokio-macros",
  "windows-sys 0.52.0",
