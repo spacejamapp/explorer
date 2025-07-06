@@ -1,32 +1,32 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM headers WHERE slot > $1 ORDER BY slot DESC LIMIT $2",
+  "query": "SELECT * FROM cores WHERE epoch=$1 AND id>$2 ORDER BY id ASC LIMIT $3",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "slot",
+        "name": "id",
         "type_info": "Int4"
       },
       {
         "ordinal": 1,
-        "name": "hash",
-        "type_info": "Varchar"
+        "name": "epoch",
+        "type_info": "Int4"
       },
       {
         "ordinal": 2,
-        "name": "parent",
-        "type_info": "Varchar"
+        "name": "vindex",
+        "type_info": "Int4"
       },
       {
         "ordinal": 3,
-        "name": "parent_state_root",
-        "type_info": "Varchar"
+        "name": "gas_used",
+        "type_info": "Int8"
       },
       {
         "ordinal": 4,
-        "name": "extrinsic_hash",
-        "type_info": "Varchar"
+        "name": "imports",
+        "type_info": "Int4"
       },
       {
         "ordinal": 5,
@@ -35,32 +35,33 @@
       },
       {
         "ordinal": 6,
-        "name": "author_index",
+        "name": "extrinsic_size",
         "type_info": "Int4"
       },
       {
         "ordinal": 7,
-        "name": "entropy_source",
-        "type_info": "Varchar"
+        "name": "exports",
+        "type_info": "Int4"
       },
       {
         "ordinal": 8,
-        "name": "seal",
-        "type_info": "Varchar"
+        "name": "bundle_size",
+        "type_info": "Int4"
       },
       {
         "ordinal": 9,
-        "name": "offenders_mark",
-        "type_info": "VarcharArray"
+        "name": "da_load",
+        "type_info": "Int8"
       },
       {
         "ordinal": 10,
-        "name": "current_epoch",
-        "type_info": "Int4"
+        "name": "popularity",
+        "type_info": "Int8"
       }
     ],
     "parameters": {
       "Left": [
+        "Int4",
         "Int4",
         "Int8"
       ]
@@ -79,5 +80,5 @@
       false
     ]
   },
-  "hash": "bd862f6c7b2f7bec455deef2c6402a8876e5e29d67eb109684aaa070648d3e78"
+  "hash": "54d198a2baf78138b47590b7ffcc69751b59ff37bd2fdbe71200776b11cf1c8a"
 }

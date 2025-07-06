@@ -6,6 +6,8 @@ use score::extrinsic::{Culprit, Fault, Verdict};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+use crate::models::hex;
+
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct DisputeVerdict {
     id: i32,
@@ -54,12 +56,12 @@ impl DisputeVerdict {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, verdict: &Verdict) -> Result<()> {
-        let target = hex::encode(verdict.target);
+        let target = hex(verdict.target);
         let age = verdict.age as i32;
         let signatures = verdict
             .votes
             .iter()
-            .map(|v| format!("{}:{}:{}", v.vote, v.index, hex::encode(v.signature)))
+            .map(|v| format!("{}:{}:{}", v.vote, v.index, hex(v.signature)))
             .collect::<Vec<String>>();
 
         query!(
@@ -95,9 +97,9 @@ impl DisputeCulprit {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, culprit: &Culprit) -> Result<()> {
-        let target = hex::encode(culprit.target);
-        let key = hex::encode(culprit.key);
-        let signature = hex::encode(culprit.signature);
+        let target = hex(culprit.target);
+        let key = hex(culprit.key);
+        let signature = hex(culprit.signature);
 
         query!(
             "INSERT INTO dispute_culprits (block,target,key,signature) VALUES ($1,$2,$3,$4)",
@@ -132,10 +134,10 @@ impl DisputeFault {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, fault: &Fault) -> Result<()> {
-        let target = hex::encode(fault.target);
+        let target = hex(fault.target);
         let vote = fault.vote;
-        let key = hex::encode(fault.key);
-        let signature = hex::encode(fault.signature);
+        let key = hex(fault.key);
+        let signature = hex(fault.signature);
 
         query!(
             "INSERT INTO dispute_faults (block,target,vote,key,signature) VALUES ($1,$2,$3,$4,$5)",

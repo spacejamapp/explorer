@@ -4,6 +4,8 @@ use score::extrinsic::TicketBody;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+use crate::models::hex;
+
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Ticket {
     id: i32,
@@ -31,7 +33,7 @@ impl Ticket {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, ticket: &TicketBody) -> Result<()> {
-        let ticket_id = hex::encode(ticket.id);
+        let ticket_id = hex(ticket.id);
         query!(
             "INSERT INTO tickets (block,ticket_id,attempt) VALUES ($1,$2,$3)",
             block,

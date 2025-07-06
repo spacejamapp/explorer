@@ -1,13 +1,13 @@
-//! Stores header data in postgres
+//! JAM scan service
 
 use async_graphql::{EmptyMutation, EmptySubscription};
 use clap::{ArgAction, CommandFactory, Parser};
 use jadex::{
-    config::{Config, Cors, Graphql, Node},
+    config::{Cors, Graphql, Node},
     service,
 };
 use jamscan::{Manager, schema::QueryRoot};
-use std::{net::SocketAddr, path::PathBuf};
+use std::net::SocketAddr;
 use tracing_subscriber::EnvFilter;
 
 #[derive(Parser)]
@@ -25,17 +25,12 @@ struct Command {
     #[arg(long, env = "GRAPHQL_PORT", default_value = "3000")]
     graphql_port: u16,
 
-    /// Graphql service port
-    #[arg(long, env = "QUIC_PORT", default_value = "6888")]
-    quic_port: u16,
-
-    /// Chain data path
-    #[arg(long, env = "DATA_PATH", default_value = "jamscan_db")]
-    data_path: PathBuf,
-
     /// Verbosity level
     #[arg(short, long, default_value = "0", action = ArgAction::Count)]
     verbose: u8,
+
+    #[command(flatten)]
+    node: Node,
 }
 
 #[tokio::main]
@@ -52,28 +47,21 @@ async fn main() -> anyhow::Result<()> {
     }));
     tracing_subscriber::fmt().with_env_filter(env).init();
 
-    let config = Config {
-        node: Node {
-            data: args.data_path,
-            spec: None,
-            quic: SocketAddr::from(([0, 0, 0, 0], args.quic_port)),
-        },
-        graphql: Graphql {
-            cors: Cors::default(),
-            graphql: SocketAddr::from(([0, 0, 0, 0], args.graphql_port)),
-        },
+    let graphql = Graphql {
+        cors: Cors::default(),
+        graphql: SocketAddr::from(([0, 0, 0, 0], args.graphql_port)),
     };
 
     let manager = Manager::new(&args.postgres, &args.redis).await?;
-    tracing::info!("Running graphql server at {}", config.graphql.graphql);
+    tracing::info!("Running graphql server at {}", graphql.graphql);
     tokio::select! {
-        r = service::node::dev(&config, manager.clone()) => r,
+        r = service::node::start(args.node, manager.clone()) => r,
         r = service::graphql::start(
             QueryRoot,
             EmptyMutation,
             EmptySubscription,
             manager.clone(),
-            &config.graphql,
+            &graphql,
         ) => r,
         _ = tokio::signal::ctrl_c() => Ok(()),
     }

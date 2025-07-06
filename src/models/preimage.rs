@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use spacejam_crypto::blake2b;
 use sqlx::PgPool;
 
+use crate::models::hex;
+
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Preimage {
     pub id: i32,
@@ -24,6 +26,7 @@ impl Preimage {
         Ok(count)
     }
 
+    /// List preimages by block
     pub async fn list_by_block(pool: &PgPool, block: i32) -> Result<Vec<Self>> {
         let data = query_as!(Self, "SELECT * FROM preimages WHERE block=$1", block)
             .fetch_all(pool)
@@ -32,17 +35,19 @@ impl Preimage {
         Ok(data)
     }
 
+    /// List preimages by service (DESC)
     pub async fn list_by_service(
         pool: &PgPool,
         service: i32,
         limit: i32,
         cursor: i32,
     ) -> Result<Vec<Self>> {
+        let fixed_cursor = if cursor == 0 { i32::MAX } else { cursor };
         let data = query_as!(
             Self,
-            "SELECT * FROM preimages WHERE requester=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+            "SELECT * FROM preimages WHERE requester=$1 AND id<$2 ORDER BY id DESC LIMIT $3",
             service,
-            cursor,
+            fixed_cursor,
             limit as i64 + 1
         )
         .fetch_all(pool)
@@ -52,7 +57,7 @@ impl Preimage {
     }
 
     pub async fn insert(pool: &PgPool, block: i32, preimage: &JamPreimage) -> Result<()> {
-        let image_hash = hex::encode(blake2b(&preimage.blob));
+        let image_hash = hex(blake2b(&preimage.blob));
 
         query!(
             "INSERT INTO preimages (block,requester,hash,blob) VALUES ($1,$2,$3,$4)",

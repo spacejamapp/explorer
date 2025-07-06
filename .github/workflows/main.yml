@@ -23,7 +23,7 @@ jobs:
           git config --global credential.helper store
           echo "https://x-access-token:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
       - name: Run Build
-        run: cargo build --release
+        run: CARGO_NET_GIT_FETCH_WITH_CLI=true cargo build --release
 
   check:
     name: Check
@@ -38,6 +38,6 @@ jobs:
           git config --global credential.helper store
           echo "https://x-access-token:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
       - name: Format
-        run: cargo fmt --check
+        run: CARGO_NET_GIT_FETCH_WITH_CLI=true cargo fmt --check
       - name: Clippy
-        run: cargo clippy --all -- -D warnings
+        run: CARGO_NET_GIT_FETCH_WITH_CLI=true cargo clippy --all -- -D warnings

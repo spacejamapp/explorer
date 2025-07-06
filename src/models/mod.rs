@@ -30,3 +30,8 @@ pub use service::Service;
 pub use ticket::Ticket;
 pub use validator::Validator;
 pub use work_result::WorkResult;
+
+#[inline]
+pub fn hex<T: AsRef<[u8]>>(bytes: T) -> String {
+    "0x".to_owned() + &hex::encode(bytes)
+}

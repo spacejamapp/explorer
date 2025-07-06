@@ -4,6 +4,8 @@ use score::service::{WorkExecResult, WorkResult as JamWorkResult};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+use crate::models::hex;
+
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct WorkResult {
     /// The key of the service
@@ -33,17 +35,19 @@ pub struct WorkResult {
 }
 
 impl WorkResult {
+    /// List all works by service (DESC)
     pub async fn list_by_service(
         pool: &PgPool,
         service: i32,
         limit: i32,
         cursor: i32,
     ) -> Result<Vec<Self>> {
+        let fixed_cursor = if cursor == 0 { i32::MAX } else { cursor };
         let data = query_as!(
             Self,
-            "SELECT * FROM work_results WHERE service=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+            "SELECT * FROM work_results WHERE service=$1 AND id<$2 ORDER BY id DESC LIMIT $3",
             service,
-            cursor,
+            fixed_cursor,
             limit as i64 + 1
         )
         .fetch_all(pool)
@@ -66,11 +70,11 @@ impl WorkResult {
 
     pub async fn insert(pool: &PgPool, guarantee: i32, result: &JamWorkResult) -> Result<()> {
         let service = result.service_id as i32;
-        let code = hex::encode(result.code_hash);
-        let payload = hex::encode(result.payload_hash);
+        let code = hex(result.code_hash);
+        let payload = hex(result.payload_hash);
         let gas = result.accumulate_gas as i64;
         let wresult = match &result.result {
-            WorkExecResult::Ok(data) => format!("Ok({})", hex::encode(data)),
+            WorkExecResult::Ok(data) => format!("Ok({})", hex(data)),
             WorkExecResult::OutOfGas => "Out of gas".to_owned(),
             WorkExecResult::Panic => "Panic".to_owned(),
             WorkExecResult::BadCode => "Bad code".to_owned(),

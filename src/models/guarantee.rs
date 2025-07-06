@@ -4,7 +4,7 @@ use score::extrinsic::ReportGuarantee;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
-use crate::models::WorkResult;
+use crate::models::{WorkResult, hex};
 
 /// ReportGuarantee (WorkReport)
 #[derive(SimpleObject, Serialize, Deserialize)]
@@ -51,12 +51,12 @@ impl Guarantee {
         let signatures = guarantee
             .signatures
             .iter()
-            .map(|sig| format!("{}:{}", sig.validator_index, hex::encode(sig.signature)))
+            .map(|sig| format!("{}:{}", sig.validator_index, hex(sig.signature)))
             .collect::<Vec<String>>();
-        let spec = hex::encode(guarantee.report.spec.hash);
+        let spec = hex(guarantee.report.spec.hash);
         let core = guarantee.report.core_index as i32;
-        let authorizer_hash = hex::encode(guarantee.report.authorizer_hash);
-        let auth_output = hex::encode(&guarantee.report.auth_output);
+        let authorizer_hash = hex(guarantee.report.authorizer_hash);
+        let auth_output = hex(&guarantee.report.auth_output);
         let auth_gas = guarantee.report.auth_gas_used as i64;
 
         let id = query_scalar!(

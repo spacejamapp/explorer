@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM validators WHERE epoch=$1 AND id>$2 ORDER BY id DESC LIMIT $3",
+  "query": "SELECT * FROM cores WHERE vindex=$1 AND id<$2 ORDER BY id DESC LIMIT $3",
   "describe": {
     "columns": [
       {
@@ -20,28 +20,43 @@
       },
       {
         "ordinal": 3,
-        "name": "blocks",
-        "type_info": "Int4"
+        "name": "gas_used",
+        "type_info": "Int8"
       },
       {
         "ordinal": 4,
-        "name": "tickets",
+        "name": "imports",
         "type_info": "Int4"
       },
       {
         "ordinal": 5,
-        "name": "preimages",
+        "name": "extrinsic_count",
         "type_info": "Int4"
       },
       {
         "ordinal": 6,
-        "name": "guarantees",
+        "name": "extrinsic_size",
         "type_info": "Int4"
       },
       {
         "ordinal": 7,
-        "name": "assurances",
+        "name": "exports",
         "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "bundle_size",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "da_load",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 10,
+        "name": "popularity",
+        "type_info": "Int8"
       }
     ],
     "parameters": {
@@ -59,8 +74,11 @@
       false,
       false,
       false,
+      false,
+      false,
+      false,
       false
     ]
   },
-  "hash": "4d846d97474cce6ab6412831399e93ff287156be64354f163a0e6c33f8b41e5c"
+  "hash": "ddc90ef501be37ed0ecc5c9edc87109cab1d6edd05eca76fec028c843f8865ee"
 }

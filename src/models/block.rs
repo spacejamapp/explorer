@@ -125,13 +125,19 @@ impl Block {
         Ok(raw)
     }
 
-    pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<()> {
+    pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<i32> {
         let raw = serde_json::to_string(&block.clone().to_json()).unwrap_or("".to_owned());
         let slot = block.header.slot as i32;
 
         query!("INSERT INTO blocks (slot,raw) VALUES ($1,$2)", slot, raw)
             .execute(pool)
             .await?;
+
+        let epoch_id = if let Some(epoch) = &block.header.epoch_mark {
+            Epoch::insert(pool, slot, epoch).await?
+        } else {
+            slot / EPOCH_LENGTH as i32
+        };
 
         // save tickets
         if let Some(tickets) = &block.header.tickets_mark {
@@ -183,13 +189,12 @@ impl Block {
         }
 
         // save header
-        let epoch = slot / EPOCH_LENGTH as i32;
-        Header::insert(pool, slot, extrinsic_count, epoch, &block.header).await?;
+        Header::insert(pool, slot, extrinsic_count, epoch_id, &block.header).await?;
 
         // save validators
         Validator::new_block(
             pool,
-            epoch,
+            epoch_id,
             block.header.author_index as i32,
             tickets_num,
             preimages_num,
@@ -198,6 +203,6 @@ impl Block {
         )
         .await?;
 
-        Ok(())
+        Ok(epoch_id)
     }
 }

@@ -1,0 +1,86 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM epochs ORDER BY id DESC limit 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "block",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "entropy",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "tickets_entropy",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "validators_ed25519",
+        "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 5,
+        "name": "validators_bandersnatches",
+        "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 6,
+        "name": "blocks",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "tickets",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "preimages",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "preimages_size",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 10,
+        "name": "guarantees",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "assurances",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "92e5287dae4ea9d8389501a8439655bdf1d15eed122aa5bc9e0f6af5fb788953"
+}

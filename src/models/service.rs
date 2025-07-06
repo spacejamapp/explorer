@@ -9,7 +9,7 @@ use sqlx::PgPool;
 
 use crate::{
     Manager,
-    models::{Preimage, WorkResult},
+    models::{Preimage, WorkResult, hex},
 };
 
 #[derive(SimpleObject, Serialize, Deserialize)]
@@ -86,11 +86,13 @@ impl Service {
         Ok(count)
     }
 
+    /// List all services (DESC)
     pub async fn list(pool: &PgPool, limit: i32, cursor: i32) -> Result<Vec<Self>> {
+        let fixed_cursor = if cursor == 0 { i32::MAX } else { cursor };
         let data = query_as!(
             Self,
-            "SELECT * FROM services WHERE id>$1 ORDER BY id DESC LIMIT $2",
-            cursor,
+            "SELECT * FROM services WHERE id<$1 ORDER BY id DESC LIMIT $2",
+            fixed_cursor,
             limit as i64 + 1
         )
         .fetch_all(pool)
@@ -107,7 +109,7 @@ impl Service {
 
     pub async fn insert(pool: &PgPool, sid: ServiceId, data: &ServiceData) -> Result<()> {
         let id = sid as i32;
-        let code = hex::encode(data.code);
+        let code = hex(data.code);
 
         // update service
         if let Ok(s) = Self::get(pool, id).await {

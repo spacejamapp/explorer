@@ -9,13 +9,13 @@ use sqlx::PgPool;
 
 use crate::{
     Manager,
-    models::{Core, Validator},
+    models::{Core, Validator, hex},
 };
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 #[graphql(complex)]
 pub struct Epoch {
-    id: i32,
+    pub id: i32,
     block: i32,
     entropy: String,
     tickets_entropy: String,
@@ -75,6 +75,14 @@ impl Epoch {
 }
 
 impl Epoch {
+    pub async fn last(pool: &PgPool) -> Result<Self> {
+        let data = query_as!(Self, "SELECT * FROM epochs ORDER BY id DESC limit 1")
+            .fetch_one(pool)
+            .await?;
+
+        Ok(data)
+    }
+
     pub async fn get(pool: &PgPool, id: i32) -> Result<Self> {
         let data = query_as!(Self, "SELECT * FROM epochs WHERE id = $1", id)
             .fetch_one(pool)
@@ -94,14 +102,14 @@ impl Epoch {
     /// FIXME: should accumulate the extrinsic count
     #[allow(dead_code)]
     pub async fn insert(pool: &PgPool, block: i32, epoch: &EpochMark) -> Result<i32> {
-        let entropy = hex::encode(epoch.entropy);
-        let tickets_entropy = hex::encode(epoch.tickets_entropy);
+        let entropy = hex(epoch.entropy);
+        let tickets_entropy = hex(epoch.tickets_entropy);
         // save validator, and use ed25519 as the primary key
         let mut validators_ed25519 = vec![];
         let mut validators_bandersnatches = vec![];
         for validator in epoch.validators {
-            validators_ed25519.push(hex::encode(validator.ed25519));
-            validators_bandersnatches.push(hex::encode(validator.bandersnatch));
+            validators_ed25519.push(hex(validator.ed25519));
+            validators_bandersnatches.push(hex(validator.bandersnatch));
         }
 
         let epoch_id = block / EPOCH_LENGTH as i32 + 1;

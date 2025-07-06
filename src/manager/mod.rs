@@ -43,7 +43,7 @@ impl Manager {
     }
 
     /// On finalized block
-    pub async fn on_finalized_block(&self, block: &score::Block) -> Result<()> {
+    pub async fn on_finalized_block(&self, block: &score::Block, epoch: i32) -> Result<()> {
         let mut spacejam = self.spacejam.write().await;
         spacejam.assurances += block.extrinsic.assurances.len() as i64;
         spacejam.guarantees += block.extrinsic.guarantees.len() as i64;
@@ -54,6 +54,7 @@ impl Manager {
         spacejam.disputes_faults += block.extrinsic.disputes.faults.len() as i64;
         spacejam.blocks += 1;
         spacejam.finalized = block.header.slot;
+        spacejam.epoch = epoch;
         Ok(())
     }
 }
