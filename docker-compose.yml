@@ -8,13 +8,18 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: jamscan
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - ./data/postgres_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.05"
+          memory: 512M
 
   redis:
     image: redis:7-alpine
@@ -25,6 +30,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.05"
+          memory: 256M
 
   jamscan:
     image: clearloop/jsvc:latest
@@ -33,91 +43,124 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./node/light:/data
-      - ./data:/shared
+      - ./data/node/light:/data
+      - ./data/config:/config
     environment:
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/jamscan?sslmode=disable
       DATA_PATH: /data
       REDIS_URL: redis://localhost:6379
       GRAPHQL_PORT: 3000
-      CHAIN: /shared/spec.json
+      CHAIN: /config/spec.json
       PRUNE: "true"
       LIGHT: "true"
-      BOOTNODE: "eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb@127.0.0.1:40002"
-      RUST_LOG: jamscan=debug,network=debug,spacejam=debug,runtime=debug
+      BOOTNODE: "eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb@127.0.0.1:40003"
+      RUST_LOG: spacejam,runtime,network,jadex,jamscan=trace
+    deploy:
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: 300MB
 
   polkajam-0:
     image: clearloop/polkajam:0.1.23
     network_mode: host
-    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 0 --port 40000 --rpc-port 19800 --pvm-backend=interpreter
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 0 --port 40000 --rpc-port 19800 --pvm-backend=interpreter
     volumes:
-      - ./data:/shared
-      - ./node/0:/data
+      - ./data/node/0:/data
+      - ./data/config:/config
     environment:
-      - RUST_LOG=jam_node=trace
+      - RUST_LOG=jam_node=debug
+    deploy:
+      resources:
+        limits:
+          cpus: "0.07"
+          memory: 200MB
 
   polkajam-1:
     image: clearloop/polkajam:0.1.23
+    network_mode: host
     depends_on:
       - polkajam-0
-    network_mode: host
-    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 1 --port 40001 --rpc-port 19801 --pvm-backend=interpreter
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 1 --port 40001 --rpc-port 19801 --pvm-backend=interpreter
     volumes:
-      - ./data:/shared
-      - ./node/1:/data
+      - ./data/node/1:/data
+      - ./data/config:/config
     environment:
-      - RUST_LOG=jam_node=trace
+      - RUST_LOG=jam_node=debug
+    deploy:
+      resources:
+        limits:
+          cpus: "0.07"
+          memory: 200MB
 
   polkajam-2:
     image: clearloop/polkajam:0.1.23
+    network_mode: host
     depends_on:
       - polkajam-0
-    network_mode: host
-    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 2 --port 40002 --rpc-port 19802 --pvm-backend=interpreter
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 2 --port 40002 --rpc-port 19802 --pvm-backend=interpreter
     volumes:
-      - ./data:/shared
-      - ./node/2:/data
+      - ./data/node/2:/data
+      - ./data/config:/config
     environment:
-      - RUST_LOG=jam_node=trace
+      - RUST_LOG=jam_node=debug
+    deploy:
+      resources:
+        limits:
+          cpus: "0.07"
+          memory: 200MB
 
   polkajam-3:
     image: clearloop/polkajam:0.1.23
+    network_mode: host
     depends_on:
       - polkajam-0
-    network_mode: host
-    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 3 --port 40003 --rpc-port 19803 --pvm-backend=interpreter
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 3 --port 40003 --rpc-port 19803 --pvm-backend=interpreter
     volumes:
-      - ./data:/shared
-      - ./node/3:/data
+      - ./data/node/3:/data
+      - ./data/config:/config
     environment:
-      - RUST_LOG=jam_node=trace
+      - RUST_LOG=jam_node=debug
+    deploy:
+      resources:
+        limits:
+          cpus: "0.07"
+          memory: 200MB
 
   polkajam-4:
     image: clearloop/polkajam:0.1.23
+    network_mode: host
     depends_on:
       - polkajam-0
-    network_mode: host
-    command: -c dev --chain /shared/spec.json run -d /data --dev-validator 4 --port 40004 --rpc-port 19804 --pvm-backend=interpreter
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 4 --port 40004 --rpc-port 19804 --pvm-backend=interpreter
     volumes:
-      - ./data:/shared
-      - ./node/4:/data
+      - ./data/node/4:/data
+      - ./data/config:/config
     environment:
-      - RUST_LOG=jam_node=trace
+      - RUST_LOG=jam_node=debug
+    deploy:
+      resources:
+        limits:
+          cpus: "0.07"
+          memory: 200MB
 
   spacejam:
     image: clearloop/spacejam:0.0.1
+    network_mode: host
     depends_on:
       - polkajam-0
-    network_mode: host
-    command: run -d /data --chain /shared/spec.json --validator 5 --address 127.0.0.1:40005
+    command: run -d /data --chain /config/spec.json --validator 5 --address 127.0.0.1:40005
     volumes:
-      - ./data:/shared
-      - ./node/5:/data
+      - ./data/node/5:/data
+      - ./data/config:/config
     environment:
       - RUST_LOG=spacejam=debug,runtime=debug,network=debug
+    deploy:
+      resources:
+        limits:
+          cpus: "0.05"
+          memory: 200MB
 
 volumes:
-  postgres_data:
   migrations:
   data:
-  node:
