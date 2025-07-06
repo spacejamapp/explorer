@@ -14,8 +14,8 @@ use std::collections::BTreeMap;
 
 impl runtime::Hook for Manager {
     async fn on_finalized_block(&self, block: JamBlock) -> Result<()> {
-        Block::insert(&self.pg, &block).await?;
-        self.on_finalized_block(&block).await?;
+        let epoch = Block::insert(&self.pg, &block).await?;
+        self.on_finalized_block(&block, epoch).await?;
         Ok(())
     }
 

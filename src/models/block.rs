@@ -125,7 +125,7 @@ impl Block {
         Ok(raw)
     }
 
-    pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<()> {
+    pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<i32> {
         let raw = serde_json::to_string(&block.clone().to_json()).unwrap_or("".to_owned());
         let slot = block.header.slot as i32;
 
@@ -203,6 +203,6 @@ impl Block {
         )
         .await?;
 
-        Ok(())
+        Ok(epoch_id)
     }
 }
