@@ -25,4 +25,4 @@ runtime = { git = "https://github.com/spacejamapp/spacejam.git", package = "spac
 score = { git = "https://github.com/spacejamapp/spacejam.git", package = "spacejam-core", branch = "node-with-hook" }
 spacejam-crypto = { git = "https://github.com/spacejamapp/spacejam.git", branch = "node-with-hook" }
 spacejson = { git = "https://github.com/spacejamapp/spacejam.git", branch = "node-with-hook" }
-jadex = { git = "https://github.com/spacejamapp/jade.git", branch = "testnet" }
+jadex = { git = "https://github.com/spacejamapp/jade.git", branch = "main" }
