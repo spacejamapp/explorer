@@ -1,65 +1,51 @@
 services:
-  postgres:
-    image: postgres
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: jamscan
-    volumes:
-      - ./data/postgres_data:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: "0.05"
-          memory: 512M
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: "0.05"
-          memory: 256M
-
-  jamscan:
-    image: clearloop/jsvc:latest
-    network_mode: host
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ./data/node/light:/data
-      - ./data/config:/config
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/jamscan?sslmode=disable
-      DATA_PATH: /data
-      REDIS_URL: redis://localhost:6379
-      GRAPHQL_PORT: 3000
-      CHAIN: /config/spec.json
-      PRUNE: "true"
-      LIGHT: "true"
-      BOOTNODE: "eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb@127.0.0.1:40003"
-      RUST_LOG: spacejam,runtime,network,jadex,jamscan=trace
-    deploy:
-      resources:
-        limits:
-          cpus: "0.10"
-          memory: 300MB
+  # postgres:
+  #   image: postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: jamscan
+  #   volumes:
+  #     - ./data/postgres_data:/var/lib/postgresql/data
+  #     - ./migrations:/docker-entrypoint-initdb.d
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #
+  # jamscan:
+  #   image: clearloop/jsvc:latest
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./data/node/light:/data
+  #     - ./data/config:/config
+  #   environment:
+  #     DATABASE_URL: postgres://postgres:postgres@localhost:5432/jamscan?sslmode=disable
+  #     DATA_PATH: /data
+  #     REDIS_URL: redis://localhost:6379
+  #     GRAPHQL_PORT: 80
+  #     CHAIN: /config/spec.json
+  #     PRUNE: "true"
+  #     LIGHT: "true"
+  #     BOOTNODE: "eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb@127.0.0.1:40003"
+  #     RUST_LOG: spacejam,runtime,network,jadex,jamscan=trace
 
   polkajam-0:
     image: clearloop/polkajam:0.1.23
@@ -70,11 +56,6 @@ services:
       - ./data/config:/config
     environment:
       - RUST_LOG=jam_node=debug
-    deploy:
-      resources:
-        limits:
-          cpus: "0.07"
-          memory: 200MB
 
   polkajam-1:
     image: clearloop/polkajam:0.1.23
@@ -87,11 +68,6 @@ services:
       - ./data/config:/config
     environment:
       - RUST_LOG=jam_node=debug
-    deploy:
-      resources:
-        limits:
-          cpus: "0.07"
-          memory: 200MB
 
   polkajam-2:
     image: clearloop/polkajam:0.1.23
@@ -104,11 +80,6 @@ services:
       - ./data/config:/config
     environment:
       - RUST_LOG=jam_node=debug
-    deploy:
-      resources:
-        limits:
-          cpus: "0.07"
-          memory: 200MB
 
   polkajam-3:
     image: clearloop/polkajam:0.1.23
@@ -121,11 +92,6 @@ services:
       - ./data/config:/config
     environment:
       - RUST_LOG=jam_node=debug
-    deploy:
-      resources:
-        limits:
-          cpus: "0.07"
-          memory: 200MB
 
   polkajam-4:
     image: clearloop/polkajam:0.1.23
@@ -138,11 +104,6 @@ services:
       - ./data/config:/config
     environment:
       - RUST_LOG=jam_node=debug
-    deploy:
-      resources:
-        limits:
-          cpus: "0.07"
-          memory: 200MB
 
   spacejam:
     image: clearloop/spacejam:0.0.1
@@ -154,12 +115,7 @@ services:
       - ./data/node/5:/data
       - ./data/config:/config
     environment:
-      - RUST_LOG=spacejam=debug,runtime=debug,network=debug
-    deploy:
-      resources:
-        limits:
-          cpus: "0.05"
-          memory: 200MB
+      - RUST_LOG=spacejam,network,runtime=trace
 
 volumes:
   migrations:
