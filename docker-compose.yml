@@ -1,34 +1,122 @@
 services:
-  postgres:
-    image: postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: jamscan
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+  # postgres:
+  #   image: postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: jamscan
+  #   volumes:
+  #     - ./data/postgres_data:/var/lib/postgresql/data
+  #     - ./migrations:/docker-entrypoint-initdb.d
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #
+  # jamscan:
+  #   image: clearloop/jsvc:latest
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./data/node/light:/data
+  #     - ./data/config:/config
+  #   environment:
+  #     DATABASE_URL: postgres://postgres:postgres@localhost:5432/jamscan?sslmode=disable
+  #     DATA_PATH: /data
+  #     REDIS_URL: redis://localhost:6379
+  #     GRAPHQL_PORT: 80
+  #     CHAIN: /config/spec.json
+  #     PRUNE: "true"
+  #     LIGHT: "true"
+  #     BOOTNODE: "eecgwpgwq3noky4ijm4jmvjtmuzv44qvigciusxakq5epnrfj2utb@127.0.0.1:40003"
+  #     RUST_LOG: spacejam,runtime,network,jadex,jamscan=trace
 
-  jamscan:
-    image: clearloop/jsvc:latest
-    platform: linux/amd64
-    depends_on:
-      postgres:
-        condition: service_healthy
+  polkajam-0:
+    image: clearloop/polkajam:0.1.23
+    network_mode: host
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 0 --port 40000 --rpc-port 19800 --pvm-backend=interpreter
     volumes:
-      - jamscan_db:/app/jamscan.db
+      - ./data/node/0:/data
+      - ./data/config:/config
     environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/jamscan
-      DATA_PATH: jamscan_db
-    ports:
-      - "3000:3000"
+      - RUST_LOG=jam_node=debug
+
+  polkajam-1:
+    image: clearloop/polkajam:0.1.23
+    network_mode: host
+    depends_on:
+      - polkajam-0
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 1 --port 40001 --rpc-port 19801 --pvm-backend=interpreter
+    volumes:
+      - ./data/node/1:/data
+      - ./data/config:/config
+    environment:
+      - RUST_LOG=jam_node=debug
+
+  polkajam-2:
+    image: clearloop/polkajam:0.1.23
+    network_mode: host
+    depends_on:
+      - polkajam-0
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 2 --port 40002 --rpc-port 19802 --pvm-backend=interpreter
+    volumes:
+      - ./data/node/2:/data
+      - ./data/config:/config
+    environment:
+      - RUST_LOG=jam_node=debug
+
+  polkajam-3:
+    image: clearloop/polkajam:0.1.23
+    network_mode: host
+    depends_on:
+      - polkajam-0
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 3 --port 40003 --rpc-port 19803 --pvm-backend=interpreter
+    volumes:
+      - ./data/node/3:/data
+      - ./data/config:/config
+    environment:
+      - RUST_LOG=jam_node=debug
+
+  polkajam-4:
+    image: clearloop/polkajam:0.1.23
+    network_mode: host
+    depends_on:
+      - polkajam-0
+    command: -c dev --chain /config/spec.json run -d /data --dev-validator 4 --port 40004 --rpc-port 19804 --pvm-backend=interpreter
+    volumes:
+      - ./data/node/4:/data
+      - ./data/config:/config
+    environment:
+      - RUST_LOG=jam_node=debug
+
+  spacejam:
+    image: clearloop/spacejam:0.0.1
+    network_mode: host
+    depends_on:
+      - polkajam-0
+    command: run -d /data --chain /config/spec.json --validator 5 --address 127.0.0.1:40005
+    volumes:
+      - ./data/node/5:/data
+      - ./data/config:/config
+    environment:
+      - RUST_LOG=spacejam,network,runtime=trace
 
 volumes:
-  postgres_data:
-  jamscan_db:
   migrations:
+  data:

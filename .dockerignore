@@ -1,6 +1,8 @@
 # Rust build artifacts
 /target/
 target/
+# Allow the release binary for Docker builds
+!target/release/jamscan
 **/*.rs.bk
 
 # Git directory

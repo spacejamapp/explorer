@@ -2,11 +2,12 @@
 
 use async_graphql::{EmptyMutation, EmptySubscription};
 use clap::{ArgAction, CommandFactory, Parser};
-use jadex::{
-    config::{Cors, Graphql, Node},
-    service,
+use jamscan::{
+    Manager,
+    graphql::{Cors, Graphql},
+    schema::QueryRoot,
 };
-use jamscan::{Manager, schema::QueryRoot};
+use spacejam::Builder as Node;
 use std::net::SocketAddr;
 use tracing_subscriber::EnvFilter;
 
@@ -49,20 +50,19 @@ async fn main() -> anyhow::Result<()> {
 
     let graphql = Graphql {
         cors: Cors::default(),
-        graphql: SocketAddr::from(([0, 0, 0, 0], args.graphql_port)),
+        endpoint: SocketAddr::from(([0, 0, 0, 0], args.graphql_port)),
     };
 
     let manager = Manager::new(&args.postgres, &args.redis).await?;
-    tracing::info!("Running graphql server at {}", graphql.graphql);
+    tracing::info!("Running graphql server at {}", graphql.endpoint);
     tokio::select! {
-        r = service::node::start(args.node, manager.clone()) => r,
-        r = service::graphql::start(
+        r = graphql.start(
             QueryRoot,
             EmptyMutation,
             EmptySubscription,
             manager.clone(),
-            &graphql,
         ) => r,
+        r = manager.start(args.node) => r,
         _ = tokio::signal::ctrl_c() => Ok(()),
     }
 }

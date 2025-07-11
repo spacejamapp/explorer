@@ -5,6 +5,7 @@ extern crate sqlx;
 
 pub use manager::Manager;
 
+pub mod graphql;
 mod manager;
 mod models;
 pub mod schema;

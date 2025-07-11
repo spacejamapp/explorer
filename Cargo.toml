@@ -7,6 +7,8 @@ default-run = "jamscan"
 [dependencies]
 anyhow = "1.0.98"
 async-graphql = "7.0.17"
+async-graphql-axum = "7.0.16"
+axum = "0.8.4"
 clap = { version = "4.5.37", features = ["derive", "env"] }
 dotenv = "0.15.0"
 hex = "0.4.3"
@@ -16,13 +18,15 @@ serde_json = "1.0.140"
 sha2 = "0.10"
 sqlx = { version = "0.8.5", features = ["runtime-tokio-rustls", "postgres"] }
 tokio = "1.44.2"
+tower = "0.5.1"
+tower-http = { version = "0.6.1", features = ["cors"] }
 tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
 
 # spacejam dependencies
-jamcodec = { git = "https://github.com/spacejamapp/spacejam.git", branch = "node-with-hook" }
-runtime = { git = "https://github.com/spacejamapp/spacejam.git", package = "spacejam-runtime", branch = "node-with-hook" }
-score = { git = "https://github.com/spacejamapp/spacejam.git", package = "spacejam-core", branch = "node-with-hook" }
-spacejam-crypto = { git = "https://github.com/spacejamapp/spacejam.git", branch = "node-with-hook" }
-spacejson = { git = "https://github.com/spacejamapp/spacejam.git", branch = "node-with-hook" }
-jadex = { git = "https://github.com/spacejamapp/jade.git", branch = "main" }
+jamcodec = { git = "https://github.com/spacejamapp/spacejam.git", branch = "main" }
+runtime = { git = "https://github.com/spacejamapp/spacejam.git", package = "spacejam-runtime", branch = "main" }
+score = { git = "https://github.com/spacejamapp/spacejam.git", package = "spacejam-core", branch = "main" }
+spacejam-crypto = { git = "https://github.com/spacejamapp/spacejam.git", branch = "main" }
+spacejam = { git = "https://github.com/spacejamapp/spacejam.git", branch = "main" }
+spacejson = { git = "https://github.com/spacejamapp/spacejam.git", branch = "main" }
