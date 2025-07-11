@@ -10,6 +10,7 @@ use score::{
     Block as JamBlock, EPOCH_LENGTH, OpaqueHash, ServiceId, TimeSlot, service::ServiceData,
     state::key, statistic::Statistics,
 };
+use spacejam::{Builder, storage::Parity, validator::LocalValidator};
 use std::collections::BTreeMap;
 
 impl runtime::Hook for Manager {
@@ -137,5 +138,24 @@ impl runtime::Hook for Manager {
         }
 
         Ok(())
+    }
+}
+
+impl runtime::Config for Manager {
+    type Validator = LocalValidator;
+    type Storage = Parity;
+    type Vm = ();
+    type Hook = Self;
+}
+
+impl Manager {
+    /// Start the spacejam node with custom hook
+    pub async fn start(self, builder: Builder) -> anyhow::Result<()> {
+        // TODO choose diff net
+        builder
+            .build_with_hook::<Manager>(self)
+            .await?
+            .start()
+            .await
     }
 }
