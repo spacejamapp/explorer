@@ -19,7 +19,7 @@ mod work_result;
 
 pub use assurance::Assurance;
 pub use block::Block;
-pub use core::Core;
+pub use core::EpochCore;
 pub use dispute::{DisputeCulprit, DisputeFault, DisputeVerdict};
 pub use envelope::Envelope;
 pub use epoch::Epoch;
@@ -28,7 +28,7 @@ pub use header::Header;
 pub use preimage::Preimage;
 pub use service::Service;
 pub use ticket::Ticket;
-pub use validator::Validator;
+pub use validator::{EpochValidator, Validator};
 pub use work_result::WorkResult;
 
 #[inline]

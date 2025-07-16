@@ -2,7 +2,7 @@
 
 use crate::{
     Manager,
-    models::{Block, Core, Epoch, Service},
+    models::{Block, Epoch, EpochCore, Service},
 };
 use anyhow::Result;
 use runtime::storage::Commit;
@@ -127,7 +127,7 @@ impl runtime::Hook for Manager {
 
         // update core statistics
         for (index, core) in statistics.cores.iter().enumerate() {
-            let _ = Core::statistic(&self.pg, epoch, index as i32, core).await;
+            let _ = EpochCore::statistic(&self.pg, epoch, index as i32, core).await;
         }
 
         // handle service data

@@ -9,7 +9,7 @@ use sqlx::PgPool;
 
 use crate::{
     Manager,
-    models::{Core, Validator, hex},
+    models::{EpochCore, EpochValidator, Validator, hex},
 };
 
 #[derive(SimpleObject, Serialize, Deserialize)]
@@ -19,8 +19,6 @@ pub struct Epoch {
     block: i32,
     entropy: String,
     tickets_entropy: String,
-    validators_ed25519: Vec<String>,
-    validators_bandersnatches: Vec<String>,
     blocks: i32,
     tickets: i32,
     preimages: i32,
@@ -36,11 +34,11 @@ impl Epoch {
         ctx: &Context<'_>,
         #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
         #[graphql(desc = "Cursor for pagination")] after: Option<String>,
-    ) -> GraphqlResult<Connection<String, Validator, EmptyFields, EmptyFields>> {
+    ) -> GraphqlResult<Connection<String, EpochValidator, EmptyFields, EmptyFields>> {
         let limit = first.unwrap_or(10).min(100);
         let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
-        let data = Validator::list_by_epoch(pool, self.id, limit, cursor).await?;
+        let data = EpochValidator::list_by_epoch(pool, self.id, limit, cursor).await?;
         let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
 
         let has_next_page = items.len() > limit as usize;
@@ -57,11 +55,11 @@ impl Epoch {
         ctx: &Context<'_>,
         #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
         #[graphql(desc = "Cursor for pagination")] after: Option<String>,
-    ) -> GraphqlResult<Connection<String, Core, EmptyFields, EmptyFields>> {
+    ) -> GraphqlResult<Connection<String, EpochCore, EmptyFields, EmptyFields>> {
         let limit = first.unwrap_or(10).min(100);
         let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
-        let data = Core::list_by_epoch(pool, self.id, limit, cursor).await?;
+        let data = EpochCore::list_by_epoch(pool, self.id, limit, cursor).await?;
         let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
 
         let has_next_page = items.len() > limit as usize;
@@ -100,19 +98,12 @@ impl Epoch {
     }
 
     /// FIXME: should accumulate the extrinsic count
-    #[allow(dead_code)]
+    //#[allow(dead_code)]
     pub async fn insert(pool: &PgPool, block: i32, epoch: &EpochMark) -> Result<i32> {
         let entropy = hex(epoch.entropy);
         let tickets_entropy = hex(epoch.tickets_entropy);
-        // save validator, and use ed25519 as the primary key
-        let mut validators_ed25519 = vec![];
-        let mut validators_bandersnatches = vec![];
-        for validator in epoch.validators {
-            validators_ed25519.push(hex(validator.ed25519));
-            validators_bandersnatches.push(hex(validator.bandersnatch));
-        }
-
         let epoch_id = block / EPOCH_LENGTH as i32 + 1;
+
         if query_as!(Self, "SELECT * from epochs WHERE id = $1", epoch_id)
             .fetch_one(pool)
             .await
@@ -120,25 +111,37 @@ impl Epoch {
         {
             // update epoch TODO check epoch is valid
             query!(
-                "UPDATE epochs SET block=$1,entropy=$2,tickets_entropy=$3,validators_ed25519=$4,validators_bandersnatches=$5 WHERE id = $6",
+                "UPDATE epochs SET block=$1,entropy=$2,tickets_entropy=$3 WHERE id = $4",
                 block,
                 entropy,
                 tickets_entropy,
-                &validators_ed25519,
-                &validators_bandersnatches,
                 epoch_id
-            ).execute(pool).await?;
+            )
+            .execute(pool)
+            .await?;
         } else {
             // insert epoch
             query!(
-                "INSERT INTO epochs (id, block,entropy,tickets_entropy,validators_ed25519,validators_bandersnatches) VALUES ($1,$2,$3,$4,$5,$6)",
+                "INSERT INTO epochs (id, block,entropy,tickets_entropy) VALUES ($1,$2,$3,$4)",
                 epoch_id,
                 block,
                 entropy,
                 tickets_entropy,
-                &validators_ed25519,
-                &validators_bandersnatches
-            ).execute(pool).await?;
+            )
+            .execute(pool)
+            .await?;
+        }
+
+        // try insert validator
+        for (vindex, validator) in epoch.validators.iter().enumerate() {
+            let _ = Validator::insert(
+                pool,
+                epoch_id,
+                &hex(validator.ed25519),
+                &hex(validator.bandersnatch),
+                vindex as i32,
+            )
+            .await;
         }
 
         Ok(epoch_id)

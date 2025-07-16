@@ -1,8 +1,8 @@
 use crate::{
     Manager,
     models::{
-        Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee,
-        Header, Preimage, Ticket, Validator,
+        Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, EpochValidator,
+        Guarantee, Header, Preimage, Ticket,
     },
 };
 use anyhow::Result;
@@ -47,6 +47,8 @@ pub struct Dispute {
 #[derive(Serialize, Deserialize)]
 pub struct Block {
     pub slot: i32,
+    pub anchor: i32,
+    pub raw: String,
 }
 
 #[Object]
@@ -109,7 +111,7 @@ impl Block {
 impl Block {
     /// Count total blocks in the database
     pub async fn count(pool: &PgPool) -> Result<i64> {
-        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM blocks")
+        let count = query_scalar!("SELECT COUNT(*) FROM blocks")
             .fetch_one(pool)
             .await?
             .unwrap_or(0);
@@ -117,22 +119,19 @@ impl Block {
     }
 
     /// Get the raw block data from the database.
-    pub async fn raw(pool: &PgPool, slot: i32) -> Result<String> {
-        let raw = query_scalar!("SELECT raw FROM blocks WHERE slot=$1", slot)
+    pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
+        let block = query_as!(Self, "SELECT * FROM blocks WHERE slot=$1", slot)
             .fetch_one(pool)
             .await?;
 
-        Ok(raw)
+        Ok(block)
     }
 
     pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<i32> {
         let raw = serde_json::to_string(&block.clone().to_json()).unwrap_or("".to_owned());
         let slot = block.header.slot as i32;
 
-        query!("INSERT INTO blocks (slot,raw) VALUES ($1,$2)", slot, raw)
-            .execute(pool)
-            .await?;
-
+        // save epoch
         let epoch_id = if let Some(epoch) = &block.header.epoch_mark {
             Epoch::insert(pool, slot, epoch).await?
         } else {
@@ -192,7 +191,7 @@ impl Block {
         Header::insert(pool, slot, extrinsic_count, epoch_id, &block.header).await?;
 
         // save validators
-        Validator::new_block(
+        let anchor = EpochValidator::new_block(
             pool,
             epoch_id,
             block.header.author_index as i32,
@@ -201,6 +200,16 @@ impl Block {
             guarantees_num,
             assurances_num,
         )
+        .await?;
+
+        // save raw block
+        query!(
+            "INSERT INTO blocks (slot,anchor,raw) VALUES ($1,$2,$3)",
+            slot,
+            anchor,
+            raw
+        )
+        .execute(pool)
         .await?;
 
         Ok(epoch_id)
