@@ -2,7 +2,7 @@ use crate::{
     Manager,
     models::{
         Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, EpochValidator,
-        Guarantee, Header, Preimage, Ticket,
+        Guarantee, Header, Preimage, Ticket, Validator,
     },
 };
 use anyhow::Result;
@@ -47,12 +47,16 @@ pub struct Dispute {
 #[derive(Serialize, Deserialize)]
 pub struct Block {
     pub slot: i32,
-    pub anchor: i32,
-    pub raw: String,
+    pub anchor_id: i32,
 }
 
 #[Object]
 impl Block {
+    async fn anchor(&self, ctx: &Context<'_>) -> GraphqlResult<Validator> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        Ok(Validator::get(pool, self.anchor_id).await?)
+    }
+
     async fn header(&self, ctx: &Context<'_>) -> GraphqlResult<BlockHeader> {
         let slot = self.slot;
         let pool = &ctx.data::<Manager>()?.pg;
@@ -118,13 +122,46 @@ impl Block {
         Ok(count)
     }
 
-    /// Get the raw block data from the database.
+    /// Get the block data from the database.
     pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
-        let block = query_as!(Self, "SELECT * FROM blocks WHERE slot=$1", slot)
-            .fetch_one(pool)
-            .await?;
+        let block = query_as!(
+            Self,
+            "SELECT slot,anchor_id FROM blocks WHERE slot=$1",
+            slot
+        )
+        .fetch_one(pool)
+        .await?;
 
         Ok(block)
+    }
+
+    /// Get the raw block data from the database.
+    pub async fn raw(pool: &PgPool, slot: i32) -> Result<String> {
+        let raw = query_scalar!("SELECT raw FROM blocks WHERE slot=$1", slot)
+            .fetch_one(pool)
+            .await?;
+        Ok(raw)
+    }
+
+    /// list all validator's anchor blocks (DESC)
+    pub async fn list_by_anchor(
+        pool: &PgPool,
+        anchor: i32,
+        limit: i32,
+        cursor: i32,
+    ) -> Result<Vec<Self>> {
+        let fixed_cursor = if cursor == 0 { i32::MAX } else { cursor };
+        let data = query_as!(
+            Self,
+            "SELECT slot,anchor_id FROM blocks WHERE anchor_id=$1 AND slot<$2 ORDER BY slot DESC LIMIT $3",
+            anchor,
+            fixed_cursor,
+            limit as i64 + 1
+        )
+            .fetch_all(pool)
+            .await?;
+
+        Ok(data)
     }
 
     pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<i32> {
@@ -204,7 +241,7 @@ impl Block {
 
         // save raw block
         query!(
-            "INSERT INTO blocks (slot,anchor,raw) VALUES ($1,$2,$3)",
+            "INSERT INTO blocks (slot,anchor_id,raw) VALUES ($1,$2,$3)",
             slot,
             anchor,
             raw

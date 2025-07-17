@@ -47,8 +47,8 @@ impl QueryRoot {
     #[graphql(name = "blockRaw")]
     async fn block_raw(&self, ctx: &Context<'_>, slot: i32) -> Result<String> {
         let pool = &ctx.data::<Manager>()?.pg;
-        let block = Block::get(pool, slot).await?;
-        Ok(block.raw)
+        let raw = Block::raw(pool, slot).await?;
+        Ok(raw)
     }
 
     /// Get the block data from the database.

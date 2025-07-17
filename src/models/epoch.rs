@@ -1,3 +1,7 @@
+use crate::{
+    Manager,
+    models::{EpochCore, EpochValidator, Validator, hex},
+};
 use anyhow::Result;
 use async_graphql::{
     ComplexObject, Context, Result as GraphqlResult, SimpleObject,
@@ -6,11 +10,6 @@ use async_graphql::{
 use score::{EPOCH_LENGTH, block::header::EpochMark};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-
-use crate::{
-    Manager,
-    models::{EpochCore, EpochValidator, Validator, hex},
-};
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 #[graphql(complex)]

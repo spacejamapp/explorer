@@ -1,13 +1,15 @@
+use crate::{Manager, models::Epoch};
 use anyhow::Result;
-use async_graphql::SimpleObject;
+use async_graphql::{ComplexObject, Context, Result as GraphqlResult, SimpleObject};
 use score::statistic::CoreActivityRecord;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
+#[graphql(complex)]
 pub struct EpochCore {
     pub id: i32,
-    epoch: i32,
+    epoch_id: i32,
     vindex: i32,
     gas_used: i64,
     imports: i32,
@@ -17,6 +19,15 @@ pub struct EpochCore {
     bundle_size: i32,
     da_load: i64,
     popularity: i64,
+}
+
+#[ComplexObject]
+impl EpochCore {
+    /// Get the Epoch
+    pub async fn epoch(&self, ctx: &Context<'_>) -> GraphqlResult<Epoch> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        Ok(Epoch::get(pool, self.epoch_id).await?)
+    }
 }
 
 impl EpochCore {
@@ -29,7 +40,7 @@ impl EpochCore {
     ) -> Result<Vec<Self>> {
         let data = query_as!(
             Self,
-            "SELECT * FROM epochs_cores WHERE epoch=$1 AND id>$2 ORDER BY id ASC LIMIT $3",
+            "SELECT * FROM epochs_cores WHERE epoch_id=$1 AND id>$2 ORDER BY id ASC LIMIT $3",
             epoch,
             cursor,
             limit as i64 + 1
@@ -69,7 +80,7 @@ impl EpochCore {
     ) -> Result<()> {
         if let Ok(c) = query_as!(
             Self,
-            "SELECT * from epochs_cores WHERE vindex = $1 AND epoch = $2",
+            "SELECT * from epochs_cores WHERE vindex = $1 AND epoch_id = $2",
             vindex,
             epoch
         )
@@ -91,7 +102,7 @@ impl EpochCore {
         } else {
             // insert epoch
             query!(
-                "INSERT INTO epochs_cores (epoch,vindex,gas_used,imports,extrinsic_count,extrinsic_size,exports,bundle_size,da_load,popularity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+                "INSERT INTO epochs_cores (epoch_id,vindex,gas_used,imports,extrinsic_count,extrinsic_size,exports,bundle_size,da_load,popularity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
                 epoch,
                 vindex,
                 record.gas_used as i64,

@@ -1,12 +1,11 @@
 //! TODO: introduce a single type with enum for all dispute related types
 
+use crate::models::hex;
 use anyhow::Result;
 use async_graphql::SimpleObject;
 use score::extrinsic::{Culprit, Fault, Verdict};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-
-use crate::models::hex;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct DisputeVerdict {

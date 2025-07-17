@@ -1,10 +1,9 @@
+use crate::models::{WorkResult, hex};
 use anyhow::Result;
 use async_graphql::SimpleObject;
 use score::extrinsic::ReportGuarantee;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-
-use crate::models::{WorkResult, hex};
 
 /// ReportGuarantee (WorkReport)
 #[derive(SimpleObject, Serialize, Deserialize)]

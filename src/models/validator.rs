@@ -1,3 +1,7 @@
+use crate::{
+    Manager,
+    models::{Block, Epoch},
+};
 use anyhow::Result;
 use async_graphql::{
     ComplexObject, Context, Result as GraphqlResult, SimpleObject,
@@ -5,8 +9,6 @@ use async_graphql::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-
-use crate::Manager;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 #[graphql(complex)]
@@ -42,6 +44,28 @@ impl Validator {
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.id.to_string(), item))
+            .collect();
+        Ok(connection)
+    }
+
+    /// List this validator's all anchor blocks (DESC)
+    pub async fn blocks(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
+        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
+    ) -> GraphqlResult<Connection<String, Block, EmptyFields, EmptyFields>> {
+        let limit = first.unwrap_or(10).min(100);
+        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
+        let pool = &ctx.data::<Manager>()?.pg;
+        let data = Block::list_by_anchor(pool, self.id, limit, cursor).await?;
+        let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
+
+        let has_next_page = items.len() > limit as usize;
+        let mut connection = Connection::new(false, has_next_page);
+        connection.edges = items
+            .into_iter()
+            .map(|item| Edge::new(item.slot.to_string(), item))
             .collect();
         Ok(connection)
     }
@@ -86,16 +110,32 @@ impl Validator {
 }
 
 #[derive(SimpleObject, Serialize, Deserialize)]
+#[graphql(complex)]
 pub struct EpochValidator {
     pub id: i32,
-    epoch: i32,
-    validator: i32,
+    epoch_id: i32,
+    validator_id: i32,
     vindex: i32,
     blocks: i32,
     tickets: i32,
     preimages: i32,
     guarantees: i32,
     assurances: i32,
+}
+
+#[ComplexObject]
+impl EpochValidator {
+    /// Get the Epoch
+    pub async fn epoch(&self, ctx: &Context<'_>) -> GraphqlResult<Epoch> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        Ok(Epoch::get(pool, self.epoch_id).await?)
+    }
+
+    /// Get the Validator
+    pub async fn validator(&self, ctx: &Context<'_>) -> GraphqlResult<Validator> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        Ok(Validator::get(pool, self.validator_id).await?)
+    }
 }
 
 impl EpochValidator {
@@ -108,7 +148,7 @@ impl EpochValidator {
     ) -> Result<Vec<Self>> {
         let data = query_as!(
             Self,
-            "SELECT * FROM epochs_validators WHERE epoch=$1 AND id>$2 ORDER BY id ASC LIMIT $3",
+            "SELECT * FROM epochs_validators WHERE epoch_id=$1 AND id>$2 ORDER BY id ASC LIMIT $3",
             epoch,
             cursor,
             limit as i64 + 1
@@ -129,7 +169,7 @@ impl EpochValidator {
         let fixed_cursor = if cursor == 0 { i32::MAX } else { cursor };
         let data = query_as!(
             Self,
-            "SELECT * FROM epochs_validators WHERE validator=$1 AND id<$2 ORDER BY id DESC LIMIT $3",
+            "SELECT * FROM epochs_validators WHERE validator_id=$1 AND id<$2 ORDER BY id DESC LIMIT $3",
             validator,
             fixed_cursor,
             limit as i64 + 1
@@ -143,7 +183,7 @@ impl EpochValidator {
     pub async fn insert(pool: &PgPool, epoch: i32, validator: i32, vindex: i32) -> Result<()> {
         if query_as!(
             Self,
-            "SELECT * FROM epochs_validators WHERE epoch=$1 AND validator=$2",
+            "SELECT * FROM epochs_validators WHERE epoch_id=$1 AND validator_id=$2",
             epoch,
             validator
         )
@@ -156,7 +196,7 @@ impl EpochValidator {
         }
 
         query!(
-            "INSERT INTO epochs_validators (epoch,validator,vindex,blocks,tickets,preimages,guarantees,assurances) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
+            "INSERT INTO epochs_validators (epoch_id,validator_id,vindex,blocks,tickets,preimages,guarantees,assurances) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
             epoch,
             validator,
             vindex,
@@ -183,7 +223,7 @@ impl EpochValidator {
     ) -> Result<i32> {
         if let Ok(validators) = query_as!(
             Self,
-            "SELECT * FROM epochs_validators WHERE epoch=$1",
+            "SELECT * FROM epochs_validators WHERE epoch_id=$1",
             epoch
         )
         .fetch_all(pool)
@@ -204,7 +244,7 @@ impl EpochValidator {
                         .execute(pool)
                         .await?;
 
-                    return Ok(v.validator);
+                    return Ok(v.validator_id);
                 }
             }
         }

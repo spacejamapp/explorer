@@ -1,10 +1,9 @@
+use crate::models::hex;
 use anyhow::Result;
 use async_graphql::SimpleObject;
 use score::extrinsic::TicketEnvelope;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-
-use crate::models::hex;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Envelope {
