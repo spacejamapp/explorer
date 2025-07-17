@@ -1,0 +1,30 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT slot,anchor_id FROM blocks WHERE anchor_id=$1 AND slot<$2 ORDER BY slot DESC LIMIT $3",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "slot",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "anchor_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "0386aaa19349ca24d3fb568247a2672b109ae9fdbda7b00bd377aa8a89123d2d"
+}

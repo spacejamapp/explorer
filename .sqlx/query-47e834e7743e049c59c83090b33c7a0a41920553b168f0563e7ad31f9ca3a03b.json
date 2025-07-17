@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM validators WHERE vindex=$1 AND id<$2 ORDER BY id DESC LIMIT $3",
+  "query": "SELECT * FROM epochs_validators WHERE epoch_id=$1",
   "describe": {
     "columns": [
       {
@@ -10,45 +10,48 @@
       },
       {
         "ordinal": 1,
-        "name": "epoch",
+        "name": "epoch_id",
         "type_info": "Int4"
       },
       {
         "ordinal": 2,
-        "name": "vindex",
+        "name": "validator_id",
         "type_info": "Int4"
       },
       {
         "ordinal": 3,
-        "name": "blocks",
+        "name": "vindex",
         "type_info": "Int4"
       },
       {
         "ordinal": 4,
-        "name": "tickets",
+        "name": "blocks",
         "type_info": "Int4"
       },
       {
         "ordinal": 5,
-        "name": "preimages",
+        "name": "tickets",
         "type_info": "Int4"
       },
       {
         "ordinal": 6,
-        "name": "guarantees",
+        "name": "preimages",
         "type_info": "Int4"
       },
       {
         "ordinal": 7,
+        "name": "guarantees",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
         "name": "assurances",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4",
-        "Int4",
-        "Int8"
+        "Int4"
       ]
     },
     "nullable": [
@@ -59,8 +62,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "60ec4afde2a4783808bad7b7c83b1ab6c68846d2f757a4759b746cf5feff84ea"
+  "hash": "47e834e7743e049c59c83090b33c7a0a41920553b168f0563e7ad31f9ca3a03b"
 }

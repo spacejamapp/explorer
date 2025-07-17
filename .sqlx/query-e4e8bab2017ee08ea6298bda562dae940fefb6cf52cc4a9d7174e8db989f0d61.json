@@ -1,15 +1,16 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO blocks (slot,raw) VALUES ($1,$2)",
+  "query": "INSERT INTO blocks (slot,anchor_id,raw) VALUES ($1,$2,$3)",
   "describe": {
     "columns": [],
     "parameters": {
       "Left": [
+        "Int4",
         "Int4",
         "Text"
       ]
     },
     "nullable": []
   },
-  "hash": "1b0163165794e0af40e6bd38e4699095f990afc9cdc4c21e9afebb5dbd716e5b"
+  "hash": "e4e8bab2017ee08ea6298bda562dae940fefb6cf52cc4a9d7174e8db989f0d61"
 }

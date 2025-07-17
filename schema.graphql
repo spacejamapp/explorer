@@ -13,6 +13,35 @@ type Block {
 	extrinsic: BlockExtrinsic!
 }
 
+type BlockConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [BlockEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Block!]!
+}
+
+"""
+An edge in a connection.
+"""
+type BlockEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Block!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
 type BlockExtrinsic {
 	tickets: [Envelope!]!
 	preimages: [Preimage!]!
@@ -536,6 +565,15 @@ type Validator {
 		"""
 		after: String
 	): EpochValidatorConnection!
+	"""
+	List this validator's all anchor blocks (DESC)
+	"""
+	blocks(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): BlockConnection!
 }
 
 type WorkResult {
