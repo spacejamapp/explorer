@@ -20,7 +20,7 @@ pub struct BlockHeader {
     parent_state_root: String,
     extrinsic_hash: String,
     extrinsic_count: i32,
-    author_index: i32,
+    author: Validator,
     entropy_source: String,
     seal: String,
     offenders_mark: Vec<String>,
@@ -47,16 +47,10 @@ pub struct Dispute {
 #[derive(Serialize, Deserialize)]
 pub struct Block {
     pub slot: i32,
-    pub anchor_id: i32,
 }
 
 #[Object]
 impl Block {
-    async fn anchor(&self, ctx: &Context<'_>) -> GraphqlResult<Validator> {
-        let pool = &ctx.data::<Manager>()?.pg;
-        Ok(Validator::get(pool, self.anchor_id).await?)
-    }
-
     async fn header(&self, ctx: &Context<'_>) -> GraphqlResult<BlockHeader> {
         let slot = self.slot;
         let pool = &ctx.data::<Manager>()?.pg;
@@ -65,6 +59,7 @@ impl Block {
         let header = Header::get(pool, slot).await?;
         let epoch = Epoch::get_by_block(pool, slot).await.ok();
         let tickets = Ticket::list_by_block(pool, slot).await?;
+        let validator = Validator::get(pool, header.author_id).await?;
         let block_header = BlockHeader {
             slot: header.slot,
             hash: header.hash,
@@ -72,7 +67,7 @@ impl Block {
             parent_state_root: header.parent_state_root,
             extrinsic_hash: header.extrinsic_hash,
             extrinsic_count: header.extrinsic_count,
-            author_index: header.author_index,
+            author: validator,
             entropy_source: header.entropy_source,
             seal: header.seal,
             offenders_mark: header.offenders_mark,
@@ -124,15 +119,10 @@ impl Block {
 
     /// Get the block data from the database.
     pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
-        let block = query_as!(
-            Self,
-            "SELECT slot,anchor_id FROM blocks WHERE slot=$1",
-            slot
-        )
-        .fetch_one(pool)
-        .await?;
-
-        Ok(block)
+        let slot = query_scalar!("SELECT slot FROM blocks WHERE slot=$1", slot)
+            .fetch_one(pool)
+            .await?;
+        Ok(Block { slot })
     }
 
     /// Get the raw block data from the database.
@@ -143,30 +133,14 @@ impl Block {
         Ok(raw)
     }
 
-    /// list all validator's anchor blocks (DESC)
-    pub async fn list_by_anchor(
-        pool: &PgPool,
-        anchor: i32,
-        limit: i32,
-        cursor: i32,
-    ) -> Result<Vec<Self>> {
-        let fixed_cursor = if cursor == 0 { i32::MAX } else { cursor };
-        let data = query_as!(
-            Self,
-            "SELECT slot,anchor_id FROM blocks WHERE anchor_id=$1 AND slot<$2 ORDER BY slot DESC LIMIT $3",
-            anchor,
-            fixed_cursor,
-            limit as i64 + 1
-        )
-            .fetch_all(pool)
-            .await?;
-
-        Ok(data)
-    }
-
     pub async fn insert(pool: &PgPool, block: &JamBlock) -> Result<i32> {
         let raw = serde_json::to_string(&block.clone().to_json()).unwrap_or("".to_owned());
         let slot = block.header.slot as i32;
+
+        // save raw block
+        query!("INSERT INTO blocks (slot,raw) VALUES ($1,$2)", slot, raw)
+            .execute(pool)
+            .await?;
 
         // save epoch
         let epoch_id = if let Some(epoch) = &block.header.epoch_mark {
@@ -224,11 +198,8 @@ impl Block {
             DisputeFault::insert(pool, slot, fault).await?;
         }
 
-        // save header
-        Header::insert(pool, slot, extrinsic_count, epoch_id, &block.header).await?;
-
         // save validators
-        let anchor = EpochValidator::new_block(
+        let author = EpochValidator::new_block(
             pool,
             epoch_id,
             block.header.author_index as i32,
@@ -239,15 +210,8 @@ impl Block {
         )
         .await?;
 
-        // save raw block
-        query!(
-            "INSERT INTO blocks (slot,anchor_id,raw) VALUES ($1,$2,$3)",
-            slot,
-            anchor,
-            raw
-        )
-        .execute(pool)
-        .await?;
+        // save header
+        Header::insert(pool, slot, extrinsic_count, epoch_id, author, &block.header).await?;
 
         Ok(epoch_id)
     }

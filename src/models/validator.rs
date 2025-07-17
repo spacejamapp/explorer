@@ -1,6 +1,6 @@
 use crate::{
     Manager,
-    models::{Block, Epoch},
+    models::{Epoch, Header},
 };
 use anyhow::Result;
 use async_graphql::{
@@ -56,12 +56,12 @@ impl Validator {
         ctx: &Context<'_>,
         #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
         #[graphql(desc = "Cursor for pagination")] after: Option<String>,
-    ) -> GraphqlResult<Connection<String, Block, EmptyFields, EmptyFields>> {
+    ) -> GraphqlResult<Connection<String, Header, EmptyFields, EmptyFields>> {
         let limit = first.unwrap_or(10).min(100);
         let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
 
-        let data = Block::list_by_anchor(pool, self.id, limit, cursor).await?;
+        let data = Header::list_by_author(pool, self.id, limit, cursor).await?;
         let has_prev_page = cursor != 0;
         let has_next_page = data.len() > limit as usize;
         let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();

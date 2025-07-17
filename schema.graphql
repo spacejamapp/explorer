@@ -8,38 +8,8 @@ type Assurance {
 }
 
 type Block {
-	anchor: Validator!
 	header: BlockHeader!
 	extrinsic: BlockExtrinsic!
-}
-
-type BlockConnection {
-	"""
-	Information to aid in pagination.
-	"""
-	pageInfo: PageInfo!
-	"""
-	A list of edges.
-	"""
-	edges: [BlockEdge!]!
-	"""
-	A list of nodes.
-	"""
-	nodes: [Block!]!
-}
-
-"""
-An edge in a connection.
-"""
-type BlockEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: Block!
-	"""
-	A cursor for use in pagination
-	"""
-	cursor: String!
 }
 
 type BlockExtrinsic {
@@ -57,7 +27,7 @@ type BlockHeader {
 	parentStateRoot: String!
 	extrinsicHash: String!
 	extrinsicCount: Int!
-	authorIndex: Int!
+	author: Validator!
 	entropySource: String!
 	seal: String!
 	offendersMark: [String!]!
@@ -264,11 +234,12 @@ type Header {
 	parentStateRoot: String!
 	extrinsicHash: String!
 	extrinsicCount: Int!
-	authorIndex: Int!
+	authorId: Int!
 	entropySource: String!
 	seal: String!
 	offendersMark: [String!]!
 	currentEpoch: Int!
+	author: Validator!
 }
 
 type HeaderConnection {
@@ -573,7 +544,7 @@ type Validator {
 		Cursor for pagination
 		"""
 		after: String
-	): BlockConnection!
+	): HeaderConnection!
 }
 
 type WorkResult {
