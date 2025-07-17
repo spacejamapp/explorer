@@ -39,7 +39,7 @@ impl Epoch {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let data = EpochValidator::list_by_epoch(pool, self.id, limit, cursor).await?;
-        let has_prev_page = cursor == 0;
+        let has_prev_page = cursor != 0;
         let has_next_page = data.len() > limit as usize;
         let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
 
@@ -62,7 +62,7 @@ impl Epoch {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let data = EpochCore::list_by_epoch(pool, self.id, limit, cursor).await?;
-        let has_prev_page = cursor == 0;
+        let has_prev_page = cursor != 0;
         let has_next_page = data.len() > limit as usize;
         let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
 

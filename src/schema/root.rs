@@ -32,7 +32,7 @@ impl QueryRoot {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let headers = Header::list(pool, limit, cursor).await?;
-        let has_prev_page = cursor == 0;
+        let has_prev_page = cursor != 0;
         let has_next_page = headers.len() > limit as usize;
         let items = headers.into_iter().take(limit as usize).collect::<Vec<_>>();
 
@@ -86,7 +86,7 @@ impl QueryRoot {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let cores = EpochCore::list_by_index(pool, index, limit, cursor).await?;
-        let has_prev_page = cursor == 0;
+        let has_prev_page = cursor != 0;
         let has_next_page = cores.len() > limit as usize;
         let items = cores.into_iter().take(limit as usize).collect::<Vec<_>>();
 
@@ -110,7 +110,7 @@ impl QueryRoot {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let services = Service::list(pool, limit, cursor).await?;
-        let has_prev_page = cursor == 0;
+        let has_prev_page = cursor != 0;
         let has_next_page = services.len() > limit as usize;
         let items = services
             .into_iter()
