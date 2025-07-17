@@ -27,6 +27,7 @@ type BlockHeader {
 	parentStateRoot: String!
 	extrinsicHash: String!
 	extrinsicCount: Int!
+	authorIndex: Int!
 	author: Validator!
 	entropySource: String!
 	seal: String!
@@ -234,11 +235,12 @@ type Header {
 	parentStateRoot: String!
 	extrinsicHash: String!
 	extrinsicCount: Int!
-	authorId: Int!
+	authorIndex: Int!
 	entropySource: String!
 	seal: String!
 	offendersMark: [String!]!
 	currentEpoch: Int!
+	authorId: Int!
 	author: Validator!
 }
 
