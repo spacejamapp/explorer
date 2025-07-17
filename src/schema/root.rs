@@ -32,10 +32,11 @@ impl QueryRoot {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let headers = Header::list(pool, limit, cursor).await?;
+        let has_prev_page = cursor == 0;
+        let has_next_page = headers.len() > limit as usize;
         let items = headers.into_iter().take(limit as usize).collect::<Vec<_>>();
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
+        let mut connection = Connection::new(has_prev_page, has_next_page);
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.slot.to_string(), item))
@@ -85,10 +86,11 @@ impl QueryRoot {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let cores = EpochCore::list_by_index(pool, index, limit, cursor).await?;
+        let has_prev_page = cursor == 0;
+        let has_next_page = cores.len() > limit as usize;
         let items = cores.into_iter().take(limit as usize).collect::<Vec<_>>();
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
+        let mut connection = Connection::new(has_prev_page, has_next_page);
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.id.to_string(), item))
@@ -108,13 +110,14 @@ impl QueryRoot {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let services = Service::list(pool, limit, cursor).await?;
+        let has_prev_page = cursor == 0;
+        let has_next_page = services.len() > limit as usize;
         let items = services
             .into_iter()
             .take(limit as usize)
             .collect::<Vec<_>>();
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
+        let mut connection = Connection::new(has_prev_page, has_next_page);
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.id.to_string(), item))

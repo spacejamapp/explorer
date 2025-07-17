@@ -1,7 +1,7 @@
 -- Add migration script here
 CREATE TABLE IF NOT EXISTS epochs (
   id INT PRIMARY KEY,
-  block INT NOT NULL REFERENCES blocks(slot),
+  block INT NOT NULL,
   entropy VARCHAR NOT NULL, -- TODO: should be unique in production
   tickets_entropy VARCHAR NOT NULL,
   blocks INT NOT NULL DEFAULT 0,
