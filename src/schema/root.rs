@@ -66,11 +66,23 @@ impl QueryRoot {
         Ok(epoch)
     }
 
-    /// Get the epoch by id
-    async fn validator(&self, ctx: &Context<'_>, id: i32) -> Result<Option<Validator>> {
+    /// Get the epoch by id/ed25519
+    async fn validator(
+        &self,
+        ctx: &Context<'_>,
+        id: Option<i32>,
+        ed25519: Option<String>,
+    ) -> Result<Option<Validator>> {
         let pool = &ctx.data::<Manager>()?.pg;
-        let validator = Validator::get(pool, id).await.ok();
-        Ok(validator)
+        if let Some(id) = id {
+            return Ok(Validator::get(pool, id).await.ok());
+        }
+
+        if let Some(ed25519) = ed25519 {
+            return Ok(Validator::get_by_ed25519(pool, &ed25519).await.ok());
+        }
+
+        Ok(None)
     }
 
     /// Get the core with all epoch statistics

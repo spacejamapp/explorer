@@ -1,6 +1,6 @@
 use crate::{
     Manager,
-    models::{Epoch, Header},
+    models::{Epoch, Header, try_hex},
 };
 use anyhow::Result;
 use async_graphql::{
@@ -78,6 +78,15 @@ impl Validator {
 impl Validator {
     pub async fn get(pool: &PgPool, id: i32) -> Result<Self> {
         let data = query_as!(Self, "SELECT * FROM validators WHERE id = $1", id)
+            .fetch_one(pool)
+            .await?;
+
+        Ok(data)
+    }
+
+    pub async fn get_by_ed25519(pool: &PgPool, hex: &str) -> Result<Self> {
+        let hex = try_hex(hex)?;
+        let data = query_as!(Self, "SELECT * FROM validators WHERE ed25519 = $1", hex)
             .fetch_one(pool)
             .await?;
 

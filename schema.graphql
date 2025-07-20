@@ -359,9 +359,9 @@ type QueryRoot {
 	"""
 	epoch(id: Int!): Epoch
 	"""
-	Get the epoch by id
+	Get the epoch by id/ed25519
 	"""
-	validator(id: Int!): Validator
+	validator(id: Int, ed25519: String): Validator
 	"""
 	Get the core with all epoch statistics
 	"""
