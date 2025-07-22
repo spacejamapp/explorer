@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM validators WHERE ed25519 = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "ed25519",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "bandersnatch",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "details",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "software",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "ip",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "website",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "scores",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "2360cb8ef3e53a347aaecf6c7eb07c9359e28c335c0a9207059a8e798cdbf5b1"
+}
