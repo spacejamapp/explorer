@@ -1,3 +1,7 @@
+use crate::{
+    Manager,
+    models::{Preimage, WorkResult, hex},
+};
 use anyhow::Result;
 use async_graphql::{
     ComplexObject, Context, Result as GraphqlResult, SimpleObject,
@@ -6,11 +10,6 @@ use async_graphql::{
 use score::{ServiceId, service::ServiceData};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-
-use crate::{
-    Manager,
-    models::{Preimage, WorkResult, hex},
-};
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 #[graphql(complex)]
@@ -42,11 +41,13 @@ impl Service {
         let limit = first.unwrap_or(10).min(100);
         let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
+
         let data = Preimage::list_by_service(pool, self.id, limit, cursor).await?;
+        let has_prev_page = cursor != 0;
+        let has_next_page = data.len() > limit as usize;
         let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
+        let mut connection = Connection::new(has_prev_page, has_next_page);
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.id.to_string(), item))
@@ -63,11 +64,13 @@ impl Service {
         let limit = first.unwrap_or(10).min(100);
         let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
+
         let data = WorkResult::list_by_service(pool, self.id, limit, cursor).await?;
+        let has_prev_page = cursor != 0;
+        let has_next_page = data.len() > limit as usize;
         let items = data.into_iter().take(limit as usize).collect::<Vec<_>>();
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
+        let mut connection = Connection::new(has_prev_page, has_next_page);
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.id.to_string(), item))

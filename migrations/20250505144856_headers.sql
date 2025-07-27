@@ -10,5 +10,7 @@ CREATE TABLE IF NOT EXISTS headers (
   entropy_source VARCHAR NOT NULL,
   seal VARCHAR NOT NULL,
   offenders_mark VARCHAR[] NOT NULL,
-  current_epoch INT NOT NULL
-)
+  current_epoch INT NOT NULL,
+  author_id INT NOT NULL
+);
+CREATE INDEX idx_headers_author ON headers (author_id);

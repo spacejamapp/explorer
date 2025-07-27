@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM validators WHERE epoch=$1",
+  "query": "SELECT * FROM epochs_cores WHERE epoch_id=$1 AND id>$2 ORDER BY id ASC LIMIT $3",
   "describe": {
     "columns": [
       {
@@ -10,7 +10,7 @@
       },
       {
         "ordinal": 1,
-        "name": "epoch",
+        "name": "epoch_id",
         "type_info": "Int4"
       },
       {
@@ -20,33 +20,50 @@
       },
       {
         "ordinal": 3,
-        "name": "blocks",
-        "type_info": "Int4"
+        "name": "gas_used",
+        "type_info": "Int8"
       },
       {
         "ordinal": 4,
-        "name": "tickets",
+        "name": "imports",
         "type_info": "Int4"
       },
       {
         "ordinal": 5,
-        "name": "preimages",
+        "name": "extrinsic_count",
         "type_info": "Int4"
       },
       {
         "ordinal": 6,
-        "name": "guarantees",
+        "name": "extrinsic_size",
         "type_info": "Int4"
       },
       {
         "ordinal": 7,
-        "name": "assurances",
+        "name": "exports",
         "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "bundle_size",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "da_load",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 10,
+        "name": "popularity",
+        "type_info": "Int8"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Int4",
+        "Int4",
+        "Int8"
       ]
     },
     "nullable": [
@@ -57,8 +74,11 @@
       false,
       false,
       false,
+      false,
+      false,
+      false,
       false
     ]
   },
-  "hash": "9d7da9189af05adc987f67bd2225894deb4dbdb3b5934aa3dedaf6841758039c"
+  "hash": "2781f912636c9a61536f9f652e76593a5feebb21f1b4e9e5ce028ed0d5345b15"
 }

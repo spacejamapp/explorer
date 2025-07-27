@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE epochs SET block=$1,entropy=$2,tickets_entropy=$3 WHERE id = $4",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Varchar",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1c2a55efd9cba19e78deb107b182bd139a3ad009dd2b95497631051b7d26f2da"
+}

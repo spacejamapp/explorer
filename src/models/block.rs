@@ -1,8 +1,8 @@
 use crate::{
     Manager,
     models::{
-        Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, Guarantee,
-        Header, Preimage, Ticket, Validator,
+        Assurance, DisputeCulprit, DisputeFault, DisputeVerdict, Envelope, Epoch, EpochValidator,
+        Guarantee, Header, Preimage, Ticket, Validator,
     },
 };
 use anyhow::Result;
@@ -21,6 +21,7 @@ pub struct BlockHeader {
     extrinsic_hash: String,
     extrinsic_count: i32,
     author_index: i32,
+    author: Validator,
     entropy_source: String,
     seal: String,
     offenders_mark: Vec<String>,
@@ -59,6 +60,7 @@ impl Block {
         let header = Header::get(pool, slot).await?;
         let epoch = Epoch::get_by_block(pool, slot).await.ok();
         let tickets = Ticket::list_by_block(pool, slot).await?;
+        let validator = Validator::get(pool, header.author_id).await?;
         let block_header = BlockHeader {
             slot: header.slot,
             hash: header.hash,
@@ -67,6 +69,7 @@ impl Block {
             extrinsic_hash: header.extrinsic_hash,
             extrinsic_count: header.extrinsic_count,
             author_index: header.author_index,
+            author: validator,
             entropy_source: header.entropy_source,
             seal: header.seal,
             offenders_mark: header.offenders_mark,
@@ -109,11 +112,19 @@ impl Block {
 impl Block {
     /// Count total blocks in the database
     pub async fn count(pool: &PgPool) -> Result<i64> {
-        let count = sqlx::query_scalar!("SELECT COUNT(*) FROM blocks")
+        let count = query_scalar!("SELECT COUNT(*) FROM blocks")
             .fetch_one(pool)
             .await?
             .unwrap_or(0);
         Ok(count)
+    }
+
+    /// Get the block data from the database.
+    pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
+        let slot = query_scalar!("SELECT slot FROM blocks WHERE slot=$1", slot)
+            .fetch_one(pool)
+            .await?;
+        Ok(Block { slot })
     }
 
     /// Get the raw block data from the database.
@@ -121,7 +132,6 @@ impl Block {
         let raw = query_scalar!("SELECT raw FROM blocks WHERE slot=$1", slot)
             .fetch_one(pool)
             .await?;
-
         Ok(raw)
     }
 
@@ -129,10 +139,12 @@ impl Block {
         let raw = serde_json::to_string(&block.clone().to_json()).unwrap_or("".to_owned());
         let slot = block.header.slot as i32;
 
+        // save raw block
         query!("INSERT INTO blocks (slot,raw) VALUES ($1,$2)", slot, raw)
             .execute(pool)
             .await?;
 
+        // save epoch
         let epoch_id = if let Some(epoch) = &block.header.epoch_mark {
             Epoch::insert(pool, slot, epoch).await?
         } else {
@@ -188,11 +200,8 @@ impl Block {
             DisputeFault::insert(pool, slot, fault).await?;
         }
 
-        // save header
-        Header::insert(pool, slot, extrinsic_count, epoch_id, &block.header).await?;
-
         // save validators
-        Validator::new_block(
+        let author = EpochValidator::new_block(
             pool,
             epoch_id,
             block.header.author_index as i32,
@@ -202,6 +211,9 @@ impl Block {
             assurances_num,
         )
         .await?;
+
+        // save header
+        Header::insert(pool, slot, extrinsic_count, epoch_id, author, &block.header).await?;
 
         Ok(epoch_id)
     }

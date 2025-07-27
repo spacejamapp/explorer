@@ -3,7 +3,11 @@
 use anyhow::Result;
 use redis::Client;
 pub use spacejam::Spacejam;
-use sqlx::PgPool;
+use sqlx::{
+    PgPool,
+    any::{Any, install_default_drivers},
+    migrate::MigrateDatabase,
+};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -29,7 +33,12 @@ impl Manager {
     /// on creating the manager, we calculate the global state of the chain
     /// and save it to the redis
     pub async fn new(pg: &str, redis: &str) -> Result<Self> {
+        // setup database & migration
+        install_default_drivers();
+        let _ = Any::create_database(pg).await;
         let pg = PgPool::connect(pg).await?;
+        migrate!().run(&pg).await.expect("Migrations failed");
+
         let redis = Arc::new(Client::open(redis)?);
         let spacejam = Arc::new(RwLock::new(Spacejam::init(&pg).await?));
 

@@ -1,11 +1,10 @@
+use crate::models::hex;
 use anyhow::Result;
 use async_graphql::SimpleObject;
 use score::extrinsic::Preimage as JamPreimage;
 use serde::{Deserialize, Serialize};
 use spacejam_crypto::blake2b;
 use sqlx::PgPool;
-
-use crate::models::hex;
 
 #[derive(SimpleObject, Serialize, Deserialize)]
 pub struct Preimage {

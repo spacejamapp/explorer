@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM validators WHERE epoch=$1 AND id>$2 ORDER BY id ASC LIMIT $3",
+  "query": "SELECT * FROM validators WHERE id = $1",
   "describe": {
     "columns": [
       {
@@ -10,45 +10,48 @@
       },
       {
         "ordinal": 1,
-        "name": "epoch",
-        "type_info": "Int4"
+        "name": "ed25519",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 2,
-        "name": "vindex",
-        "type_info": "Int4"
+        "name": "bandersnatch",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 3,
-        "name": "blocks",
-        "type_info": "Int4"
+        "name": "name",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 4,
-        "name": "tickets",
-        "type_info": "Int4"
+        "name": "details",
+        "type_info": "Text"
       },
       {
         "ordinal": 5,
-        "name": "preimages",
-        "type_info": "Int4"
+        "name": "software",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 6,
-        "name": "guarantees",
-        "type_info": "Int4"
+        "name": "ip",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 7,
-        "name": "assurances",
+        "name": "website",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "scores",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4",
-        "Int4",
-        "Int8"
+        "Int4"
       ]
     },
     "nullable": [
@@ -59,8 +62,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "65303a075d1a413966c5804ceaadb737e440f471b68403109a9b1c24a8603847"
+  "hash": "eaebc37b44255311a3f0b5ed8475de6620272c0c3878d8f11a31d8b7b08400cd"
 }

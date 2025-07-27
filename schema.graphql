@@ -28,54 +28,12 @@ type BlockHeader {
 	extrinsicHash: String!
 	extrinsicCount: Int!
 	authorIndex: Int!
+	author: Validator!
 	entropySource: String!
 	seal: String!
 	offendersMark: [String!]!
 	epochMark: Epoch
 	ticketsMark: [Ticket!]!
-}
-
-type Core {
-	id: Int!
-	epoch: Int!
-	vindex: Int!
-	gasUsed: Int!
-	imports: Int!
-	extrinsicCount: Int!
-	extrinsicSize: Int!
-	exports: Int!
-	bundleSize: Int!
-	daLoad: Int!
-	popularity: Int!
-}
-
-type CoreConnection {
-	"""
-	Information to aid in pagination.
-	"""
-	pageInfo: PageInfo!
-	"""
-	A list of edges.
-	"""
-	edges: [CoreEdge!]!
-	"""
-	A list of nodes.
-	"""
-	nodes: [Core!]!
-}
-
-"""
-An edge in a connection.
-"""
-type CoreEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: Core!
-	"""
-	A cursor for use in pagination
-	"""
-	cursor: String!
 }
 
 type Dispute {
@@ -121,8 +79,6 @@ type Epoch {
 	block: Int!
 	entropy: String!
 	ticketsEntropy: String!
-	validatorsEd25519: [String!]!
-	validatorsBandersnatches: [String!]!
 	blocks: Int!
 	tickets: Int!
 	preimages: Int!
@@ -134,13 +90,109 @@ type Epoch {
 		Cursor for pagination
 		"""
 		after: String
-	): ValidatorConnection!
+	): EpochValidatorConnection!
 	cores(		first: Int = 10,
 		"""
 		Cursor for pagination
 		"""
 		after: String
-	): CoreConnection!
+	): EpochCoreConnection!
+}
+
+type EpochCore {
+	id: Int!
+	epochId: Int!
+	vindex: Int!
+	gasUsed: Int!
+	imports: Int!
+	extrinsicCount: Int!
+	extrinsicSize: Int!
+	exports: Int!
+	bundleSize: Int!
+	daLoad: Int!
+	popularity: Int!
+	"""
+	Get the Epoch
+	"""
+	epoch: Epoch!
+}
+
+type EpochCoreConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [EpochCoreEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [EpochCore!]!
+}
+
+"""
+An edge in a connection.
+"""
+type EpochCoreEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: EpochCore!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+type EpochValidator {
+	id: Int!
+	epochId: Int!
+	validatorId: Int!
+	vindex: Int!
+	blocks: Int!
+	tickets: Int!
+	preimages: Int!
+	guarantees: Int!
+	assurances: Int!
+	"""
+	Get the Epoch
+	"""
+	epoch: Epoch!
+	"""
+	Get the Validator
+	"""
+	validator: Validator!
+}
+
+type EpochValidatorConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [EpochValidatorEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [EpochValidator!]!
+}
+
+"""
+An edge in a connection.
+"""
+type EpochValidatorEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: EpochValidator!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
 }
 
 """
@@ -188,6 +240,8 @@ type Header {
 	seal: String!
 	offendersMark: [String!]!
 	currentEpoch: Int!
+	authorId: Int!
+	author: Validator!
 }
 
 type HeaderConnection {
@@ -299,20 +353,15 @@ type QueryRoot {
 	"""
 	Get the block data from the database.
 	"""
-	block(slot: Int!): Block!
+	block(slot: Int!): Block
 	"""
 	Get the epoch by id
 	"""
-	epoch(id: Int!): Epoch!
+	epoch(id: Int!): Epoch
 	"""
-	Get the validator with all epoch statistics
+	Get the epoch by id/ed25519
 	"""
-	validator(		index: Int!,		first: Int = 10,
-		"""
-		Cursor for pagination
-		"""
-		after: String
-	): ValidatorConnection!
+	validator(id: Int, ed25519: String): Validator
 	"""
 	Get the core with all epoch statistics
 	"""
@@ -321,7 +370,7 @@ type QueryRoot {
 		Cursor for pagination
 		"""
 		after: String
-	): CoreConnection!
+	): EpochCoreConnection!
 	"""
 	List all services
 	"""
@@ -334,7 +383,7 @@ type QueryRoot {
 	"""
 	Get the service
 	"""
-	service(id: Int!): Service!
+	service(id: Int!): Service
 }
 
 type Service {
@@ -454,13 +503,13 @@ type Spacejam {
 	"""
 	services: Int!
 	"""
+	Current epoch
+	"""
+	epoch: Int!
+	"""
 	The total number of extrinsics
 	"""
 	extrinsics: Int!
-  """
-	Current epoch
-	"""
-  epoch: Int!
 }
 
 type Ticket {
@@ -472,42 +521,32 @@ type Ticket {
 
 type Validator {
 	id: Int!
-	epoch: Int!
-	vindex: Int!
-	blocks: Int!
-	tickets: Int!
-	preimages: Int!
-	guarantees: Int!
-	assurances: Int!
-}
-
-type ValidatorConnection {
+	ed25519: String!
+	bandersnatch: String!
+	name: String!
+	details: String!
+	software: String!
+	ip: String!
+	website: String!
+	scores: Int!
 	"""
-	Information to aid in pagination.
+	List this validator's all epochs data (DESC)
 	"""
-	pageInfo: PageInfo!
+	epochs(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): EpochValidatorConnection!
 	"""
-	A list of edges.
+	List this validator's all anchor blocks (DESC)
 	"""
-	edges: [ValidatorEdge!]!
-	"""
-	A list of nodes.
-	"""
-	nodes: [Validator!]!
-}
-
-"""
-An edge in a connection.
-"""
-type ValidatorEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: Validator!
-	"""
-	A cursor for use in pagination
-	"""
-	cursor: String!
+	blocks(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): HeaderConnection!
 }
 
 type WorkResult {

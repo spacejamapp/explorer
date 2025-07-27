@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "UPDATE cores SET gas_used=$1,imports=$2,extrinsic_count=$3,extrinsic_size=$4,exports=$5,bundle_size=$6,da_load=$7,popularity=$8 WHERE id = $9",
+  "query": "UPDATE epochs_cores SET gas_used=$1,imports=$2,extrinsic_count=$3,extrinsic_size=$4,exports=$5,bundle_size=$6,da_load=$7,popularity=$8 WHERE id = $9",
   "describe": {
     "columns": [],
     "parameters": {
@@ -18,5 +18,5 @@
     },
     "nullable": []
   },
-  "hash": "e0950651e01e8780810f5b40c0311616bc3ae717ace6b93c9f6a9cab2e79555c"
+  "hash": "8766aa1a236194314d650d2c97346b309ea00f8fdc97c350c4af341898fc1166"
 }

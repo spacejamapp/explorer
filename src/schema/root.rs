@@ -3,7 +3,7 @@
 use crate::{
     Manager,
     manager::Spacejam,
-    models::{Block, Core, Epoch, Header, Service, Validator},
+    models::{Block, Epoch, EpochCore, Header, Service, Validator},
 };
 use async_graphql::{
     Context, Object, Result,
@@ -32,10 +32,11 @@ impl QueryRoot {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let headers = Header::list(pool, limit, cursor).await?;
+        let has_prev_page = cursor != 0;
+        let has_next_page = headers.len() > limit as usize;
         let items = headers.into_iter().take(limit as usize).collect::<Vec<_>>();
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
+        let mut connection = Connection::new(has_prev_page, has_next_page);
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.slot.to_string(), item))
@@ -52,8 +53,10 @@ impl QueryRoot {
     }
 
     /// Get the block data from the database.
-    async fn block(&self, _ctx: &Context<'_>, slot: i32) -> Result<Block> {
-        Ok(Block { slot })
+    async fn block(&self, ctx: &Context<'_>, slot: i32) -> Result<Option<Block>> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let block = Block::get(pool, slot).await.ok();
+        Ok(block)
     }
 
     /// Get the epoch by id
@@ -63,28 +66,23 @@ impl QueryRoot {
         Ok(epoch)
     }
 
-    /// Get the validator with all epoch statistics
+    /// Get the epoch by id/ed25519
     async fn validator(
         &self,
         ctx: &Context<'_>,
-        index: i32,
-        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
-        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
-    ) -> Result<Connection<String, Validator, EmptyFields, EmptyFields>> {
-        let limit = first.unwrap_or(10).min(100);
-        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
+        id: Option<i32>,
+        ed25519: Option<String>,
+    ) -> Result<Option<Validator>> {
         let pool = &ctx.data::<Manager>()?.pg;
+        if let Some(id) = id {
+            return Ok(Validator::get(pool, id).await.ok());
+        }
 
-        let vs = Validator::list_by_index(pool, index, limit, cursor).await?;
-        let items = vs.into_iter().take(limit as usize).collect::<Vec<_>>();
+        if let Some(ed25519) = ed25519 {
+            return Ok(Validator::get_by_ed25519(pool, &ed25519).await.ok());
+        }
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
-        connection.edges = items
-            .into_iter()
-            .map(|item| Edge::new(item.id.to_string(), item))
-            .collect();
-        Ok(connection)
+        Ok(None)
     }
 
     /// Get the core with all epoch statistics
@@ -94,16 +92,17 @@ impl QueryRoot {
         index: i32,
         #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
         #[graphql(desc = "Cursor for pagination")] after: Option<String>,
-    ) -> Result<Connection<String, Core, EmptyFields, EmptyFields>> {
+    ) -> Result<Connection<String, EpochCore, EmptyFields, EmptyFields>> {
         let limit = first.unwrap_or(10).min(100);
         let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
         let pool = &ctx.data::<Manager>()?.pg;
 
-        let cores = Core::list_by_index(pool, index, limit, cursor).await?;
+        let cores = EpochCore::list_by_index(pool, index, limit, cursor).await?;
+        let has_prev_page = cursor != 0;
+        let has_next_page = cores.len() > limit as usize;
         let items = cores.into_iter().take(limit as usize).collect::<Vec<_>>();
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
+        let mut connection = Connection::new(has_prev_page, has_next_page);
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.id.to_string(), item))
@@ -123,13 +122,14 @@ impl QueryRoot {
         let pool = &ctx.data::<Manager>()?.pg;
 
         let services = Service::list(pool, limit, cursor).await?;
+        let has_prev_page = cursor != 0;
+        let has_next_page = services.len() > limit as usize;
         let items = services
             .into_iter()
             .take(limit as usize)
             .collect::<Vec<_>>();
 
-        let has_next_page = items.len() > limit as usize;
-        let mut connection = Connection::new(false, has_next_page);
+        let mut connection = Connection::new(has_prev_page, has_next_page);
         connection.edges = items
             .into_iter()
             .map(|item| Edge::new(item.id.to_string(), item))

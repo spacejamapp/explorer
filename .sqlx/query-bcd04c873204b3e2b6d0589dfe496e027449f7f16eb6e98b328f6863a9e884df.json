@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO cores (epoch,vindex,gas_used,imports,extrinsic_count,extrinsic_size,exports,bundle_size,da_load,popularity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+  "query": "INSERT INTO epochs_cores (epoch_id,vindex,gas_used,imports,extrinsic_count,extrinsic_size,exports,bundle_size,da_load,popularity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
   "describe": {
     "columns": [],
     "parameters": {
@@ -19,5 +19,5 @@
     },
     "nullable": []
   },
-  "hash": "106b9dfb7aa60463eed6e7b40920df87d1b01ca1c02a9a75d6bba31b8291656c"
+  "hash": "bcd04c873204b3e2b6d0589dfe496e027449f7f16eb6e98b328f6863a9e884df"
 }
