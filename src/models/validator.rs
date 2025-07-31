@@ -13,7 +13,7 @@ use sqlx::PgPool;
 #[derive(SimpleObject, Serialize, Deserialize)]
 #[graphql(complex)]
 pub struct Validator {
-    id: i32,
+    pub id: i32,
     ed25519: String,
     bandersnatch: String,
     name: String,
@@ -73,9 +73,44 @@ impl Validator {
             .collect();
         Ok(connection)
     }
+
+    /// Count the total blocks number
+    pub async fn total_blocks(&self, ctx: &Context<'_>) -> GraphqlResult<i64> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let count = Header::count_by_author(&pool, self.id).await?;
+        Ok(count)
+    }
+
+    /// Count the total tickets number
+    pub async fn total_tickets(&self, ctx: &Context<'_>) -> GraphqlResult<i64> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let count = EpochValidator::count_tickets_by_validator(&pool, self.id).await?;
+        Ok(count)
+    }
+
+    /// Count the total epochs number
+    pub async fn total_epochs(&self, ctx: &Context<'_>) -> GraphqlResult<i64> {
+        let pool = &ctx.data::<Manager>()?.pg;
+        let count = EpochValidator::count_epochs_by_validator(&pool, self.id).await?;
+        Ok(count)
+    }
 }
 
 impl Validator {
+    /// List all services (ASC)
+    pub async fn list(pool: &PgPool, limit: i32, cursor: i32) -> Result<Vec<Self>> {
+        let data = query_as!(
+            Self,
+            "SELECT * FROM validators WHERE id>$1 ORDER BY id ASC LIMIT $2",
+            cursor,
+            limit as i64 + 1
+        )
+        .fetch_all(pool)
+        .await?;
+
+        Ok(data)
+    }
+
     pub async fn get(pool: &PgPool, id: i32) -> Result<Self> {
         let data = query_as!(Self, "SELECT * FROM validators WHERE id = $1", id)
             .fetch_one(pool)
@@ -191,6 +226,32 @@ impl EpochValidator {
         .await?;
 
         Ok(data)
+    }
+
+    /// count the validator's epochs
+    pub async fn count_epochs_by_validator(pool: &PgPool, validator: i32) -> Result<i64> {
+        let count = query_scalar!(
+            "SELECT COUNT(id) FROM epochs_validators WHERE validator_id=$1",
+            validator
+        )
+        .fetch_one(pool)
+        .await?
+        .unwrap_or(0);
+
+        Ok(count)
+    }
+
+    /// count the validator's tickets
+    pub async fn count_tickets_by_validator(pool: &PgPool, validator: i32) -> Result<i64> {
+        let count = query_scalar!(
+            "SELECT SUM(tickets) FROM epochs_validators WHERE validator_id=$1",
+            validator
+        )
+        .fetch_one(pool)
+        .await?
+        .unwrap_or(0);
+
+        Ok(count)
     }
 
     pub async fn insert(pool: &PgPool, epoch: i32, validator: i32, vindex: i32) -> Result<()> {

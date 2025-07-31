@@ -359,6 +359,15 @@ type QueryRoot {
 	"""
 	epoch(id: Int!): Epoch
 	"""
+	List all validators
+	"""
+	validators(		first: Int = 10,
+		"""
+		Cursor for pagination
+		"""
+		after: String
+	): ValidatorConnection!
+	"""
 	Get the epoch by id/ed25519
 	"""
 	validator(id: Int, ed25519: String): Validator
@@ -547,6 +556,47 @@ type Validator {
 		"""
 		after: String
 	): HeaderConnection!
+	"""
+	Count the total blocks number
+	"""
+	totalBlocks: Int!
+	"""
+	Count the total tickets number
+	"""
+	totalTickets: Int!
+	"""
+	Count the total epochs number
+	"""
+	totalEpochs: Int!
+}
+
+type ValidatorConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [ValidatorEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Validator!]!
+}
+
+"""
+An edge in a connection.
+"""
+type ValidatorEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Validator!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
 }
 
 type WorkResult {
