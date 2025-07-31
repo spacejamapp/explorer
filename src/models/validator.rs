@@ -77,21 +77,21 @@ impl Validator {
     /// Count the total blocks number
     pub async fn total_blocks(&self, ctx: &Context<'_>) -> GraphqlResult<i64> {
         let pool = &ctx.data::<Manager>()?.pg;
-        let count = Header::count_by_author(&pool, self.id).await?;
+        let count = Header::count_by_author(pool, self.id).await?;
         Ok(count)
     }
 
     /// Count the total tickets number
     pub async fn total_tickets(&self, ctx: &Context<'_>) -> GraphqlResult<i64> {
         let pool = &ctx.data::<Manager>()?.pg;
-        let count = EpochValidator::count_tickets_by_validator(&pool, self.id).await?;
+        let count = EpochValidator::count_tickets_by_validator(pool, self.id).await?;
         Ok(count)
     }
 
     /// Count the total epochs number
     pub async fn total_epochs(&self, ctx: &Context<'_>) -> GraphqlResult<i64> {
         let pool = &ctx.data::<Manager>()?.pg;
-        let count = EpochValidator::count_epochs_by_validator(&pool, self.id).await?;
+        let count = EpochValidator::count_epochs_by_validator(pool, self.id).await?;
         Ok(count)
     }
 }
