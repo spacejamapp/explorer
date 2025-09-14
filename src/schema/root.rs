@@ -78,6 +78,33 @@ impl QueryRoot {
         Ok(epoch)
     }
 
+    /// List all validators
+    async fn validators(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(default = 10, validator(minimum = 1, maximum = 100))] first: Option<i32>,
+        #[graphql(desc = "Cursor for pagination")] after: Option<String>,
+    ) -> Result<Connection<String, Validator, EmptyFields, EmptyFields>> {
+        let limit = first.unwrap_or(10).min(100);
+        let cursor = after.unwrap_or_default().parse::<i32>().unwrap_or(0);
+        let pool = &ctx.data::<Manager>()?.pg;
+
+        let validators = Validator::list(pool, limit, cursor).await?;
+        let has_prev_page = cursor != 0;
+        let has_next_page = validators.len() > limit as usize;
+        let items = validators
+            .into_iter()
+            .take(limit as usize)
+            .collect::<Vec<_>>();
+
+        let mut connection = Connection::new(has_prev_page, has_next_page);
+        connection.edges = items
+            .into_iter()
+            .map(|item| Edge::new(item.id.to_string(), item))
+            .collect();
+        Ok(connection)
+    }
+
     /// Get the epoch by id/ed25519
     async fn validator(
         &self,

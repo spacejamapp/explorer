@@ -1,0 +1,71 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM validators WHERE id>$1 ORDER BY id ASC LIMIT $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "ed25519",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "bandersnatch",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "details",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "software",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "ip",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "website",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "scores",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "bc786b3f818e83eb420b5c3e326faa164097b4c3a655f559f0b6e6b771c779f9"
+}

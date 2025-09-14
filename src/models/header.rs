@@ -70,6 +70,16 @@ impl Header {
         Ok(data)
     }
 
+    /// count the validator's anchoring blocks
+    pub async fn count_by_author(pool: &PgPool, author: i32) -> Result<i64> {
+        let count = query_scalar!("SELECT COUNT(slot) FROM headers WHERE author_id=$1", author)
+            .fetch_one(pool)
+            .await?
+            .unwrap_or(0);
+
+        Ok(count)
+    }
+
     /// NOTE: this will not being used, consider remove it.
     pub async fn get(pool: &PgPool, slot: i32) -> Result<Self> {
         let data = query_as!(Self, "SELECT * FROM headers WHERE slot=$1", slot)
