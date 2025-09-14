@@ -89,6 +89,15 @@ impl Header {
         Ok(data)
     }
 
+    /// Get the slot id for block by hash
+    pub async fn hash_to_slot(pool: &PgPool, hash: &str) -> Result<i32> {
+        let data = query_scalar!("SELECT slot FROM headers WHERE hash=$1", hash)
+            .fetch_one(pool)
+            .await?;
+
+        Ok(data)
+    }
+
     pub async fn insert(
         pool: &PgPool,
         slot: i32,

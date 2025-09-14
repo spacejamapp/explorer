@@ -53,10 +53,22 @@ impl QueryRoot {
     }
 
     /// Get the block data from the database.
-    async fn block(&self, ctx: &Context<'_>, slot: i32) -> Result<Option<Block>> {
+    async fn block(
+        &self,
+        ctx: &Context<'_>,
+        slot: Option<i32>,
+        hash: Option<String>,
+    ) -> Result<Option<Block>> {
         let pool = &ctx.data::<Manager>()?.pg;
-        let block = Block::get(pool, slot).await.ok();
-        Ok(block)
+        if let Some(slot) = slot {
+            return Ok(Block::get(pool, slot).await.ok());
+        }
+
+        if let Some(hash) = hash {
+            return Ok(Block::get_by_hash(pool, &hash).await.ok());
+        }
+
+        Ok(None)
     }
 
     /// Get the epoch by id

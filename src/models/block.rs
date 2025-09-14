@@ -127,6 +127,12 @@ impl Block {
         Ok(Block { slot })
     }
 
+    /// Get the block data by hash from the database.
+    pub async fn get_by_hash(pool: &PgPool, hash: &str) -> Result<Self> {
+        let slot = Header::hash_to_slot(pool, hash).await?;
+        Ok(Block { slot })
+    }
+
     /// Get the raw block data from the database.
     pub async fn raw(pool: &PgPool, slot: i32) -> Result<String> {
         let raw = query_scalar!("SELECT raw FROM blocks WHERE slot=$1", slot)

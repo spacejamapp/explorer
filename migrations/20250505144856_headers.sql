@@ -1,7 +1,7 @@
 -- Add migration script here
 CREATE TABLE IF NOT EXISTS headers (
   slot INT PRIMARY KEY,
-  hash VARCHAR NOT NULL,
+  hash VARCHAR NOT NULL UNIQUE,
   parent VARCHAR NOT NULL,
   parent_state_root VARCHAR NOT NULL,
   extrinsic_hash VARCHAR NOT NULL,
